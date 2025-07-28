@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Kelas>
  */
+use App\Models\Guru;
+
 class KelasFactory extends Factory
 {
     /**
@@ -17,7 +19,8 @@ class KelasFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nama_kelas' => $this->faker->word() . ' ' . $this->faker->randomDigitNotNull(),
+            'wali_kelas_id' => Guru::factory(),
         ];
     }
 }

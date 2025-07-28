@@ -17,7 +17,8 @@ class MataPelajaranFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nama_mapel' => $this->faker->word(),
+            'deskripsi' => $this->faker->sentence(),
         ];
     }
 }
