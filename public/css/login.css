@@ -1,0 +1,37 @@
+body {
+    background: linear-gradient(to right, #f0f2f5, #dbe8ff);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Segoe UI", sans-serif;
+}
+
+.card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.form-control {
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.logo {
+    width: 50px;
+    margin-bottom: 1rem;
+}
+
+.small-text {
+    font-size: 0.875rem;
+}
+
+.form-label {
+    font-weight: 500;
+}
