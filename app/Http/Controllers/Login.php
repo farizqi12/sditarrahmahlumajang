@@ -37,8 +37,6 @@ class Login extends Controller
                     return redirect()->intended('/murid/dashboard');
                 case 'staff_tu':
                     return redirect()->intended('/staff_tu/dashboard');
-                default:
-                    return redirect()->intended('/dashboard');
             }
         }
 

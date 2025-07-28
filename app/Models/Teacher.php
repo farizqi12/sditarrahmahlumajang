@@ -18,4 +18,14 @@ class Teacher extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function classes()
+    {
+        return $this->hasMany(ClassModel::class, 'teacher_id');
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
 }

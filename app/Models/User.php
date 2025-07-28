@@ -28,6 +28,36 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function studentProfile()
+    {
+        return $this->hasOne(Student::class);
+    }
+
+    public function teacherProfile()
+    {
+        return $this->hasOne(Teacher::class);
+    }
+
+    public function createdAssignments()
+    {
+        return $this->hasMany(Assignment::class, 'created_by');
+    }
+
+    public function uploadedMaterials()
+    {
+        return $this->hasMany(LearningMaterial::class, 'uploaded_by');
+    }
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function walletTransactionsCreated()
+    {
+        return $this->hasMany(WalletTransaction::class, 'created_by');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
