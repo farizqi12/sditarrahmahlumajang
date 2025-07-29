@@ -29,4 +29,9 @@ class Enrollment extends Model
     {
         return $this->belongsTo(ClassModel::class, 'class_id');
     }
+
+    public function academicYear()
+    {
+        return $this->belongsTo(AcademicYear::class);
+    }
 }

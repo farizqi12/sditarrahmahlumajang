@@ -51,4 +51,9 @@ class ClassModel extends Model
     {
         return $this->hasMany(Schedule::class);
     }
+
+    public function academicYear()
+    {
+        return $this->belongsTo(AcademicYear::class);
+    }
 }

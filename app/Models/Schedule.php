@@ -33,4 +33,9 @@ class Schedule extends Model
     {
         return $this->belongsTo(Teacher::class);
     }
+
+    public function academicYear()
+    {
+        return $this->belongsTo(AcademicYear::class);
+    }
 }

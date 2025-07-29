@@ -34,4 +34,9 @@ class LearningMaterial extends Model
     {
         return $this->belongsTo(User::class, 'uploaded_by');
     }
+
+    public function academicYear()
+    {
+        return $this->belongsTo(AcademicYear::class);
+    }
 }
