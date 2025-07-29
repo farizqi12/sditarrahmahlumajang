@@ -19,81 +19,31 @@
 
     <!-- Main Content -->
     <div class="content">
+        <x-notif></x-notif>
         <!-- Stats Cards -->
-        <div class="row mt-4 g-4">
-            <div class="col-md-3 col-6 stats-card">
-                <div class="card p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Total Users</h6>
-                            <h3 class="mb-0">1,234</h3>
-                        </div>
-                        <i class="bi bi-people text-primary"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-6 stats-card">
-                <div class="card p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Active Courses</h6>
-                            <h3 class="mb-0">56</h3>
-                        </div>
-                        <i class="bi bi-book text-success"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-6 stats-card">
-                <div class="card p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Enrollments</h6>
-                            <h3 class="mb-0">2,890</h3>
-                        </div>
-                        <i class="bi bi-person-plus text-warning"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-6 stats-card">
-                <div class="card p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Revenue</h6>
-                            <h3 class="mb-0">$12,450</h3>
-                        </div>
-                        <i class="bi bi-currency-dollar text-danger"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Courses Table -->
-        <div class="card p-3 mt-4">
-            <h5>Courses Overview</h5>
+        <div class="row mt-4">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
-                            <th class="course-name">Course Name</th>
-                            <th class="d-none d-md-table-cell">Instructor</th>
-                            <th class="enrolled">Enrolled</th>
-                            <th class="status">Status</th>
-                            <th class="actions">Actions</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="course-name">Introduction to Python</td>
-                            <td class="d-none d-md-table-cell">John Doe</td>
-                            <td class="enrolled">150</td>
-                            <td class="status"><span class="badge bg-success rounded-pill">Active</span></td>
-                            <td class="actions">
-                                <div class="btn-group btn-group-sm" role="group">
-
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Baris lainnya sama -->
+                        @foreach ($users as $user)
+                            <tr>
+                                <td>{{ $user->name }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>{{ $user->role }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary">Edit</button>
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

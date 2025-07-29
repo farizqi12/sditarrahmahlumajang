@@ -22,17 +22,24 @@ Route::post('/logout', [Login::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    //admin
-    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/admin/courses', [CoursesController::class, 'index'])->name('admin.courses');
-    Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
-    Route::get('/admin/reports', [ReportsController::class, 'index'])->name('admin.reports');
-    //kepala sekolah
+    
+    // Admin Routes
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::resource('users', UserController::class);
+        Route::get('/courses', [CoursesController::class, 'index'])->name('courses');
+        Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
+    });
+
+    // Kepala Sekolah Routes
     Route::get('/kepala_sekolah/dashboard', [DashboardController::class, 'index'])->name('kepala_sekolah.dashboard');
-    //guru
+    
+    // Guru Routes
     Route::get('/guru/dashboard', [DashboardController::class, 'index'])->name('guru.dashboard');
-    //murid
+    
+    // Murid Routes
     Route::get('/murid/dashboard', [DashboardController::class, 'index'])->name('murid.dashboard');
-    //staff tu
+    
+    // Staff TU Routes
     Route::get('/staff_tu/dashboard', [DashboardController::class, 'index'])->name('staff_tu.dashboard');
 });
