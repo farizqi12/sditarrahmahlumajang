@@ -19,7 +19,6 @@
 
     <!-- Main Content -->
     <div class="content">
-        <x-notif></x-notif>
         <!-- Stats Cards -->
         <div class="row mt-4 g-4">
             <div class="col-md-3 col-6 stats-card">

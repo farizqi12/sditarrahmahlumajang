@@ -22,8 +22,6 @@ class DashboardController extends Controller
                 return view('murid.dashboard');
             case 'staff_tu':
                 return view('staff_tu.dashboard');
-            default:
-                return view('dashboard'); // Fallback jika role tidak terdefinisi
         }
     }
 }

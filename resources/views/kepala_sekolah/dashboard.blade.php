@@ -8,6 +8,9 @@
 <body>
     <h1>Selamat Datang, Kepala Sekolah!</h1>
     <p>Ini adalah halaman dashboard khusus untuk Kepala Sekolah.</p>
+    <x-sidebar></x-sidebar>
+
+    <x-navbar></x-navbar>
 
     <form action="{{ route('logout') }}" method="POST">
         @csrf

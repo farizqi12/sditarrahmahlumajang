@@ -35,3 +35,36 @@ body {
 .form-label {
     font-weight: 500;
 }
+
+/* Animation for toast entrance */
+@keyframes toastSlideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Animation for toast exit */
+@keyframes toastSlideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Apply animations to toast */
+.toast.show {
+    animation: toastSlideIn 0.3s forwards;
+}
+
+.toast.hiding {
+    animation: toastSlideOut 0.3s forwards;
+}
