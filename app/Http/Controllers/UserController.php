@@ -40,7 +40,7 @@ class UserController extends Controller
             if ($request->role_id == 4) {
                 $currentYear = date('Y');
                 $lastStudent = \App\Models\Student::where('nis', 'like', $currentYear . '%')->latest('nis')->first();
-                
+
                 $nextSequence = 1;
                 if ($lastStudent) {
                     $lastSequence = (int) substr($lastStudent->nis, 4);
@@ -119,4 +119,3 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
     }
 }
-

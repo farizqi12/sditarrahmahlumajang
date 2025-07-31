@@ -44,7 +44,7 @@
                                     data-bs-target="#editUserModal-{{ $user->id }}">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <form method="POST" action="{{ route('users.destroy', $user->id) }}" class="d-inline"
+                                <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}" class="d-inline"
                                     onsubmit="return confirm('Yakin ingin hapus user ini?')">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm"><i
@@ -56,7 +56,7 @@
                         <!-- Edit Modal -->
                         <div class="modal fade" id="editUserModal-{{ $user->id }}" tabindex="-1">
                             <div class="modal-dialog">
-                                <form action="{{ route('users.update', $user->id) }}" method="POST">
+                                <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
                                     @csrf @method('PUT')
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -113,7 +113,7 @@
     <!-- Add Modal -->
     <div class="modal fade" id="addUserModal" tabindex="-1">
         <div class="modal-dialog">
-            <form action="{{ route('users.store') }}" method="POST">
+            <form action="{{ route('admin.users.store') }}" method="POST">
                 @csrf
                 <div class="modal-content">
                     <div class="modal-header">

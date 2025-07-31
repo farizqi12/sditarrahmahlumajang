@@ -29,7 +29,7 @@ class WalletTransaction extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function saving()
+    public function relatedSaving()
     {
         return $this->hasOne(Saving::class);
     }
