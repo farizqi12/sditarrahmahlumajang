@@ -15,6 +15,7 @@ class ClassModel extends Model
         'name',
         'description',
         'teacher_id',
+        'academic_year_id',
     ];
 
     public function teacher()

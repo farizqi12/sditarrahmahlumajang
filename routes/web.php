@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\Login;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CoursesController;
@@ -27,10 +28,11 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
-        Route::get('/courses', [CoursesController::class, 'index'])->name('courses');
+        Route::resource('courses', CoursesController::class);
+        Route::post('academic-years', [AcademicYearController::class, 'store'])->name('academic-years.store');
         Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
     });
-    
+
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');

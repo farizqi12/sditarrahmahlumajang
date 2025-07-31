@@ -25,8 +25,7 @@ class UserController extends Controller
             'email'    => 'required|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role_id'  => 'required|exists:roles,id',
-            'nis'      => 'nullable|string|max:255|unique:students,nis|required_if:role_id,4', // Assuming role_id 4 is for Murid
-            'nip'      => 'nullable|string|max:255|unique:teachers,nip|required_if:role_id,3', // Assuming role_id 3 is for Guru
+            'nip'      => 'nullable|string|max:255|unique:teachers',
         ]);
 
         DB::transaction(function () use ($request) {
@@ -38,15 +37,26 @@ class UserController extends Controller
             ]);
 
             // Role ID 4 for Murid
-            if ($request->role_id == 4 && $request->filled('nis')) {
+            if ($request->role_id == 4) {
+                $currentYear = date('Y');
+                $lastStudent = \App\Models\Student::where('nis', 'like', $currentYear . '%')->latest('nis')->first();
+                
+                $nextSequence = 1;
+                if ($lastStudent) {
+                    $lastSequence = (int) substr($lastStudent->nis, 4);
+                    $nextSequence = $lastSequence + 1;
+                }
+
+                $newNis = $currentYear . str_pad($nextSequence, 4, '0', STR_PAD_LEFT);
+
                 $user->student()->create([
-                    'nis'   => $request->nis,
-                    'class' => 'Unassigned' // Default class, can be updated later
+                    'nis'   => $newNis,
+                    'class' => 'Unassigned'
                 ]);
             }
 
             // Role ID 3 for Guru
-            if ($request->role_id == 3 && $request->filled('nip')) {
+            if ($request->role_id == 3) {
                 $user->teacher()->create(['nip' => $request->nip]);
             }
         });
@@ -91,7 +101,7 @@ class UserController extends Controller
             }
 
             // Role is Guru, update or create teacher profile
-            if ($request->role_id == 3 && $request->filled('nip')) {
+            if ($request->role_id == 3) {
                 $user->teacher()->updateOrCreate(
                     ['user_id' => $user->id],
                     ['nip' => $request->nip]
