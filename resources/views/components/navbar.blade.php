@@ -48,7 +48,9 @@
             <div class="dropdown">
                 <button class="btn btn-link text-dark p-0" type="button" data-bs-toggle="dropdown">
                     <div class="nav-user-info">
-                        <span class="user-name me-3 d-none d-sm-inline">Admin User</span>
+                        @if(Auth::check())
+                            <span class="user-name me-3 d-none d-sm-inline">{{ Auth::user()->name }}</span>
+                        @endif
                         <i class="bi bi-person-circle fs-4"></i>
                     </div>
                 </button>

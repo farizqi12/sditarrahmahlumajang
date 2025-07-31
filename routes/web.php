@@ -30,10 +30,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/courses', [CoursesController::class, 'index'])->name('courses');
         Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
     });
-
+    
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
 
     // Kepala Sekolah Routes
     Route::get('/kepala_sekolah/dashboard', [DashboardController::class, 'index'])->name('kepala_sekolah.dashboard');

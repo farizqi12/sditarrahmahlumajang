@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClassModel;
+use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,7 +17,19 @@ class DashboardController extends Controller
 
         switch ($user->role->name) {
             case 'admin':
-                return view('admin.dashboard');
+                $totalUsers = User::count();
+                $totalStudents = Student::count();
+                $totalTeachers = Teacher::count();
+                $totalClasses = ClassModel::count();
+                $recentUsers = User::with('role')->latest()->take(5)->get();
+
+                return view('admin.dashboard', compact(
+                    'totalUsers',
+                    'totalStudents',
+                    'totalTeachers',
+                    'totalClasses',
+                    'recentUsers'
+                ));
             case 'kepala_sekolah':
                 return view('kepala_sekolah.dashboard');
             case 'guru':
