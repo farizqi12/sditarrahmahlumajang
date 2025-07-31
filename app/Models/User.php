@@ -29,12 +29,12 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-    public function studentProfile()
+    public function student()
     {
         return $this->hasOne(Student::class);
     }
 
-    public function teacherProfile()
+    public function teacher()
     {
         return $this->hasOne(Teacher::class);
     }
