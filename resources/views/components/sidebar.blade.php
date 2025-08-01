@@ -15,6 +15,11 @@
         <i class="bi bi-people me-2"></i> Users
     </a>
 
+    <a href="{{ url('/admin/absensi') }}"
+        class="{{ Request::is('absensi') || Request::is('*/absensi') ? 'active' : '' }}">
+        <i class="bi bi-floppy me-2"></i> Absensi
+    </a>
+
     <a href="{{ url('/admin/reports') }}"
         class="{{ Request::is('reports') || Request::is('*/reports') ? 'active' : '' }}">
         <i class="bi bi-bar-chart me-2"></i> Reports

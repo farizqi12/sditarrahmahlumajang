@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Manajemen Kelas</title>
     <meta name="csrf-token" content="{{ csrf_token() }}"> <!-- For AJAX -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('css/admin/dashboard.css') }}">
 </head>
+
 <body>
     <x-navbar />
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <x-sidebar />
 
     <div class="content">
@@ -36,71 +39,80 @@
                     </thead>
                     <tbody>
                         @forelse ($courses as $course)
-                        <tr>
-                            <td>{{ $course->name }}</td>
-                            <td>{{ $course->teacher->user->name ?? '-' }}</td>
-                            <td>{{ $course->academicYear->name ?? '-' }}</td>
-                            <td>{{ Str::limit($course->description, 50) }}</td>
-                            <td>
-                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editCourseModal-{{ $course->id }}">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <form method="POST" action="{{ route('admin.courses.destroy', $course->id) }}" class="d-inline" onsubmit="return confirm('Yakin ingin hapus kelas ini?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td>{{ $course->name }}</td>
+                                <td>{{ $course->teacher->user->name ?? '-' }}</td>
+                                <td>{{ $course->academicYear->name ?? '-' }}</td>
+                                <td>{{ Str::limit($course->description, 50) }}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#editCourseModal-{{ $course->id }}">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <form method="POST" action="{{ route('admin.courses.destroy', $course->id) }}"
+                                        class="d-inline" onsubmit="return confirm('Yakin ingin hapus kelas ini?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm"><i
+                                                class="bi bi-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
 
-                        <!-- Edit Modal -->
-                        <div class="modal fade" id="editCourseModal-{{ $course->id }}" tabindex="-1">
-                            <div class="modal-dialog">
-                                <form action="{{ route('admin.courses.update', $course->id) }}" method="POST">
-                                    @csrf @method('PUT')
-                                    <div class="modal-content">
-                                        <div class="modal-header"><h5>Edit Kelas</h5></div>
-                                        <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label class="form-label">Nama Kelas</label>
-                                                <input name="name" value="{{ old('name', $course->name) }}" class="form-control" required>
+                            <!-- Edit Modal -->
+                            <div class="modal fade" id="editCourseModal-{{ $course->id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <form action="{{ route('admin.courses.update', $course->id) }}" method="POST">
+                                        @csrf @method('PUT')
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5>Edit Kelas</h5>
                                             </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Deskripsi</label>
-                                                <textarea name="description" class="form-control" rows="3">{{ old('description', $course->description) }}</textarea>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Nama Kelas</label>
+                                                    <input name="name" value="{{ old('name', $course->name) }}"
+                                                        class="form-control" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Deskripsi</label>
+                                                    <textarea name="description" class="form-control" rows="3">{{ old('description', $course->description) }}</textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Wali Kelas</label>
+                                                    <select name="teacher_id" class="form-select" required>
+                                                        @foreach ($teachers as $teacher)
+                                                            <option value="{{ $teacher->id }}"
+                                                                {{ old('teacher_id', $course->teacher_id) == $teacher->id ? 'selected' : '' }}>
+                                                                {{ $teacher->user->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Tahun Ajaran</label>
+                                                    <select name="academic_year_id" class="form-select" required>
+                                                        @foreach ($academicYears as $year)
+                                                            <option value="{{ $year->id }}"
+                                                                {{ old('academic_year_id', $course->academic_year_id) == $year->id ? 'selected' : '' }}>
+                                                                {{ $year->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
                                             </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Wali Kelas</label>
-                                                <select name="teacher_id" class="form-select" required>
-                                                    @foreach ($teachers as $teacher)
-                                                        <option value="{{ $teacher->id }}" {{ old('teacher_id', $course->teacher_id) == $teacher->id ? 'selected' : '' }}>
-                                                            {{ $teacher->user->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Tahun Ajaran</label>
-                                                <select name="academic_year_id" class="form-select" required>
-                                                    @foreach ($academicYears as $year)
-                                                        <option value="{{ $year->id }}" {{ old('academic_year_id', $course->academic_year_id) == $year->id ? 'selected' : '' }}>
-                                                            {{ $year->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-primary">Simpan</button>
                                             </div>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                            <button type="submit" class="btn btn-primary">Simpan</button>
-                                        </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
                         @empty
-                        <tr>
-                            <td colspan="5" class="text-center">Belum ada data kelas.</td>
-                        </tr>
+                            <tr>
+                                <td colspan="5" class="text-center">Belum ada data kelas.</td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -115,7 +127,9 @@
             <form id="addCourseForm" action="{{ route('admin.courses.store') }}" method="POST">
                 @csrf
                 <div class="modal-content">
-                    <div class="modal-header"><h5>Tambah Kelas</h5></div>
+                    <div class="modal-header">
+                        <h5>Tambah Kelas</h5>
+                    </div>
                     <div class="modal-body">
                         <div id="course-error-container"></div>
                         <div class="mb-3">
@@ -131,7 +145,9 @@
                             <select name="teacher_id" class="form-select" required>
                                 <option selected disabled>Pilih Wali Kelas</option>
                                 @foreach ($teachers as $teacher)
-                                    <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>{{ $teacher->user->name }}</option>
+                                    <option value="{{ $teacher->id }}"
+                                        {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>
+                                        {{ $teacher->user->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -141,10 +157,13 @@
                                 <select id="academicYearSelect" name="academic_year_id" class="form-select" required>
                                     <option selected disabled>Pilih Tahun Ajaran</option>
                                     @foreach ($academicYears as $year)
-                                        <option value="{{ $year->id }}" {{ old('academic_year_id') == $year->id ? 'selected' : '' }}>{{ $year->name }}</option>
+                                        <option value="{{ $year->id }}"
+                                            {{ old('academic_year_id') == $year->id ? 'selected' : '' }}>
+                                            {{ $year->name }}</option>
                                     @endforeach
                                 </select>
-                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addAcademicYearModal">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                                    data-bs-target="#addAcademicYearModal">
                                     <i class="bi bi-plus"></i> Baru
                                 </button>
                             </div>
@@ -163,12 +182,15 @@
     <div class="modal fade" id="addAcademicYearModal" tabindex="-1">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
-                <div class="modal-header"><h5>Tambah Tahun Ajaran</h5></div>
+                <div class="modal-header">
+                    <h5>Tambah Tahun Ajaran</h5>
+                </div>
                 <div class="modal-body">
                     <div id="year-error-container"></div>
                     <div class="mb-3">
                         <label class="form-label">Nama</label>
-                        <input type="text" id="yearName" class="form-control" placeholder="e.g., 2024/2025 Ganjil">
+                        <input type="text" id="yearName" class="form-control"
+                            placeholder="e.g., 2024/2025 Ganjil">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Tanggal Mulai</label>
@@ -184,7 +206,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-target="#addCourseModal" data-bs-toggle="modal">Kembali</button>
+                    <button type="button" class="btn btn-secondary" data-bs-target="#addCourseModal"
+                        data-bs-toggle="modal">Kembali</button>
                     <button type="button" id="saveAcademicYear" class="btn btn-primary">Simpan</button>
                 </div>
             </div>
@@ -201,47 +224,49 @@
             const errorContainer = document.getElementById('year-error-container');
             errorContainer.innerHTML = '';
 
-            fetch('{{ route("admin.academic-years.store") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ 
-                    name: name, 
-                    start_date: startDate, 
-                    end_date: endDate, 
-                    is_active: isActive 
+            fetch('{{ route('admin.academic-years.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        start_date: startDate,
+                        end_date: endDate,
+                        is_active: isActive
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const select = document.getElementById('academicYearSelect');
-                    const newOption = new Option(data.academicYear.name, data.academicYear.id, true, true);
-                    select.add(newOption);
-                    bootstrap.Modal.getInstance(document.getElementById('addAcademicYearModal')).hide();
-                    bootstrap.Modal.getInstance(document.getElementById('addCourseModal')).show();
-                } else {
-                    let errorHtml = '<div class="alert alert-danger"><ul>';
-                    if (typeof data.message === 'object') {
-                        for (const key in data.message) {
-                            errorHtml += `<li>${data.message[key][0]}</li>`;
-                        }
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const select = document.getElementById('academicYearSelect');
+                        const newOption = new Option(data.academicYear.name, data.academicYear.id, true, true);
+                        select.add(newOption);
+                        bootstrap.Modal.getInstance(document.getElementById('addAcademicYearModal')).hide();
+                        bootstrap.Modal.getInstance(document.getElementById('addCourseModal')).show();
                     } else {
-                        errorHtml += `<li>${data.message}</li>`;
+                        let errorHtml = '<div class="alert alert-danger"><ul>';
+                        if (typeof data.message === 'object') {
+                            for (const key in data.message) {
+                                errorHtml += `<li>${data.message[key][0]}</li>`;
+                            }
+                        } else {
+                            errorHtml += `<li>${data.message}</li>`;
+                        }
+                        errorHtml += '</ul></div>';
+                        errorContainer.innerHTML = errorHtml;
                     }
-                    errorHtml += '</ul></div>';
-                    errorContainer.innerHTML = errorHtml;
-                }
-            })
-            .catch(error => {
-                errorContainer.innerHTML = '<div class="alert alert-danger">Terjadi kesalahan. Silakan coba lagi.</div>';
-            });
+                })
+                .catch(error => {
+                    errorContainer.innerHTML =
+                        '<div class="alert alert-danger">Terjadi kesalahan. Silakan coba lagi.</div>';
+                });
         });
 
         // Show main modal if validation fails on course creation
-        @if($errors->any())
+        @if ($errors->any())
             const addCourseModal = new bootstrap.Modal(document.getElementById('addCourseModal'));
             const errorContainer = document.getElementById('course-error-container');
             let errorHtml = '<div class="alert alert-danger"><ul>';
@@ -254,4 +279,5 @@
         @endif
     </script>
 </body>
+
 </html>

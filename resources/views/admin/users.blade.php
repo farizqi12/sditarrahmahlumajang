@@ -5,12 +5,13 @@
     <meta charset="UTF-8">
     <title>Manajemen User</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('css/admin/dashboard.css') }}">
 </head>
 
 <body>
     <x-navbar />
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <x-sidebar />
 
     <div class="container mt-4">
@@ -44,8 +45,8 @@
                                     data-bs-target="#editUserModal-{{ $user->id }}">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}" class="d-inline"
-                                    onsubmit="return confirm('Yakin ingin hapus user ini?')">
+                                <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}"
+                                    class="d-inline" onsubmit="return confirm('Yakin ingin hapus user ini?')">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm"><i
                                             class="bi bi-trash"></i></button>

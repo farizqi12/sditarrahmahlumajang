@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\AbsensiController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
@@ -51,6 +52,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('users', UserController::class)->names('users');
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
     Route::post('academic-years', [AcademicYearController::class, 'store'])->name('academic-years.store');
+    Route::resource('absensi', AbsensiController::class)->names('absensi');
+    Route::post('/absensi/checkin', [AbsensiController::class, 'checkIn'])->name('absensi.checkin');
+    Route::post('/absensi/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');
 });
 
 // Kepala Sekolah Routes
