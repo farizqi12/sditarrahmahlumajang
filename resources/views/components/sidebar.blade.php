@@ -104,6 +104,11 @@
         class="{{ Request::is('reports') || Request::is('*/reports') ? 'active' : '' }}">
         <i class="bi bi-bar-chart me-2"></i> Reports
     </a>
+
+    <a href="{{ url('/admin/tabungan') }}"
+        class="{{ Request::is('tabungan') || Request::is('*/tabungan') ? 'active' : '' }}">
+        <i class="bi bi-bar-chart me-2"></i> Tabungan
+    </a>
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
