@@ -8,6 +8,9 @@
 <body>
     <h1>Selamat Datang, Staff TU!</h1>
     <p>Ini adalah halaman dashboard khusus untuk Staff TU.</p>
+    <x-sidebar></x-sidebar>
+
+    <x-navbar></x-navbar>
 
     <form action="{{ route('logout') }}" method="POST">
         @csrf
