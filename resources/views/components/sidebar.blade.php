@@ -25,4 +25,18 @@
         <i class="bi bi-bar-chart me-2"></i> Reports
     </a>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebarToggler = document.getElementById("sidebarToggler");
+        const sidebar = document.getElementById("sidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
 
+        function toggleSidebar() {
+            sidebar.classList.toggle("active");
+            sidebarOverlay.classList.toggle("active");
+        }
+
+        sidebarToggler.addEventListener("click", toggleSidebar);
+        sidebarOverlay.addEventListener("click", toggleSidebar);
+    });
+</script>
