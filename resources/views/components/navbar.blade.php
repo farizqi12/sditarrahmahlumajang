@@ -1,8 +1,9 @@
+<!-- resources/views/layouts/navbar.blade.php -->
 <nav class="navbar navbar-expand-lg admin-navbar">
     <div class="container-fluid">
         <!-- Sidebar Toggle and Brand -->
         <div class="d-flex align-items-center">
-            <button class="btn btn-link text-dark me-2 sidebar-toggler" id="sidebarToggler">
+            <button class="btn btn-link text-dark me-2 sidebar-toggler d-lg-none" id="sidebarToggler">
                 <i class="bi bi-list"></i>
             </button>
             <h5 class="navbar-brand m-0">Dashboard</h5>
@@ -44,11 +45,11 @@
                 </ul>
             </div>
 
-            <!-- User Dropdown with Admin User and Icon -->
+            <!-- User Dropdown -->
             <div class="dropdown">
                 <button class="btn btn-link text-dark p-0" type="button" data-bs-toggle="dropdown">
                     <div class="nav-user-info d-flex align-items-center">
-                        @if(Auth::check())
+                        @if (Auth::check())
                             <span class="user-name me-2 d-none d-sm-inline">{{ Auth::user()->name }}</span>
                         @endif
                         <i class="bi bi-person-circle"></i>
@@ -61,7 +62,6 @@
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-
                     <li>
                         <form action="{{ route('logout') }}" method="POST" class="d-inline w-100">
                             @csrf
@@ -76,13 +76,13 @@
     </div>
 </nav>
 
-<!-- Mobile Search Form (Hidden by default) -->
-<div class="container-fluid mobile-search-form d-none" id="mobileSearchForm" style="background: #f8f9fa; padding: 10px;">
-    <form class="d-flex">
+<!-- Mobile Search Form -->
+<div class="container-fluid mobile-search-form" id="mobileSearchForm">
+    <form class="d-flex w-100">
         <div class="position-relative w-100">
             <i class="bi bi-search search-icon"></i>
             <input class="form-control search-input" type="search" placeholder="Search courses..." aria-label="Search">
-            <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y" id="closeSearchBtn">
+            <button type="button" class="btn btn-link" id="closeSearchBtn">
                 <i class="bi bi-x"></i>
             </button>
         </div>
@@ -90,84 +90,139 @@
 </div>
 
 <style>
-  .admin-navbar .container-fluid {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 1rem;
-  }
-
-  .admin-navbar .search-form {
-    width: 250px;
-  }
-
-  .admin-navbar .search-icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6c757d;
-  }
-
-  .admin-navbar .search-input {
-    padding-left: 35px;
-  }
-
-  .admin-navbar .nav-user-info .user-name {
-    font-weight: 500;
-  }
-
-  .notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    font-size: 0.6rem;
-    padding: 0.2em 0.4em;
-  }
-
-  .mobile-search-form {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-
-  @media (max-width: 992px) {
-    .admin-navbar .search-form {
-      display: none;
-    }
-    .admin-navbar .d-lg-none {
-      display: block !important;
-    }
-  }
-
-  @media (max-width: 576px) {
-    .admin-navbar .user-name {
-      display: none;
-    }
+    /* Navbar Layout */
     .admin-navbar .container-fluid {
-        padding: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 1rem;
     }
-    .admin-navbar .navbar-brand {
-        font-size: 1rem; /* Perkecil font size dashboard */
+
+    .admin-navbar .search-form {
+        width: 250px;
     }
-  }
+
+    .admin-navbar .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+
+    .admin-navbar .search-input {
+        padding-left: 35px;
+        border-radius: 2rem;
+    }
+
+    .admin-navbar .nav-user-info .user-name {
+        font-weight: 500;
+    }
+
+    .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        font-size: 0.6rem;
+        padding: 0.2em 0.4em;
+    }
+
+    /* Mobile Search Form */
+    .mobile-search-form {
+        display: none;
+        backdrop-filter: blur(6px);
+        background-color: rgba(255, 255, 255, 0.7);
+        border-radius: 1rem;
+        padding: 0.75rem 1rem;
+        margin-top: 0.25rem;
+        animation: slideDown 0.3s ease;
+    }
+
+    .mobile-search-form.show {
+        display: block;
+    }
+
+    .mobile-search-form .search-input {
+        border: 1px solid #ccc;
+        border-radius: 2rem;
+        padding-left: 2.5rem;
+        padding-right: 2.5rem;
+        font-size: 0.95rem;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .mobile-search-form .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+
+    #closeSearchBtn {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-size: 1.2rem;
+    }
+
+    /* Responsive Tweaks */
+    @media (max-width: 992px) {
+        .admin-navbar .search-form {
+            display: none;
+        }
+
+        .admin-navbar .d-lg-none {
+            display: block !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .admin-navbar .user-name {
+            display: none;
+        }
+
+        .admin-navbar .container-fluid {
+            padding: 0.5rem;
+        }
+
+        .admin-navbar .navbar-brand {
+            font-size: 1rem;
+        }
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0%);
+        }
+    }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const mobileSearchBtn = document.getElementById('mobileSearchBtn');
-    const mobileSearchForm = document.getElementById('mobileSearchForm');
-    const closeSearchBtn = document.getElementById('closeSearchBtn');
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+        const mobileSearchForm = document.getElementById('mobileSearchForm');
+        const closeSearchBtn = document.getElementById('closeSearchBtn');
 
-    if (mobileSearchBtn) {
-        mobileSearchBtn.addEventListener('click', function () {
-            mobileSearchForm.classList.toggle('d-none');
-        });
-    }
+        if (mobileSearchBtn) {
+            mobileSearchBtn.addEventListener('click', function() {
+                mobileSearchForm.classList.add('show');
+            });
+        }
 
-    if (closeSearchBtn) {
-        closeSearchBtn.addEventListener('click', function () {
-            mobileSearchForm.classList.add('d-none');
-        });
-    }
-});
+        if (closeSearchBtn) {
+            closeSearchBtn.addEventListener('click', function() {
+                mobileSearchForm.classList.remove('show');
+            });
+        }
+    });
 </script>
-
