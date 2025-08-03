@@ -223,15 +223,25 @@
             const role = parseInt(document.getElementById('inputRole').value);
             const nipField = document.getElementById('nipField');
             const nisField = document.getElementById('nisField');
+            const nisInput = document.getElementById('inputNis');
+            const isAdding = document.getElementById('formMethod').value === 'POST';
 
             nipField.classList.add('d-none');
             nisField.classList.add('d-none');
+            nisInput.readOnly = false; // Default state
 
-            if (role === 3) nipField.classList.remove('d-none');
-            if (role === 4) nisField.classList.remove('d-none');
-            if (role === 2) nisField.classList.remove('d-none');
-            if (role === 5) nisField.classList.remove('d-none');
-
+            if (role === 3) { // Guru
+                nipField.classList.remove('d-none');
+            } else if (role === 4) { // Murid
+                if (isAdding) {
+                    // Saat menambah murid baru, field NIS disembunyikan
+                    nisField.classList.add('d-none');
+                } else {
+                    // Saat mengedit, tampilkan field NIS tapi buat read-only
+                    nisField.classList.remove('d-none');
+                    nisInput.readOnly = true;
+                }
+            }
         }
         document.addEventListener('DOMContentLoaded', function() {
             const toggleButtons = document.querySelectorAll('.toggle-password');

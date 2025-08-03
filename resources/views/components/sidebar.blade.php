@@ -107,7 +107,7 @@
 
     <a href="{{ url('/admin/tabungan') }}"
         class="{{ Request::is('tabungan') || Request::is('*/tabungan') ? 'active' : '' }}">
-        <i class="bi bi-bar-chart me-2"></i> Tabungan
+        <i class="bi bi-wallet2 me-2"></i> Tabungan
     </a>
 </div>
 <script>

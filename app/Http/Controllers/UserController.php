@@ -25,7 +25,7 @@ class UserController extends Controller
             'email'    => 'required|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role_id'  => 'required|exists:roles,id',
-            'nip'      => 'nullable|string|max:255|unique:teachers',
+            'nip'      => ['nullable', 'string', 'max:255', 'unique:teachers', 'required_if:role_id,3'],
         ]);
 
         DB::transaction(function () use ($request) {
