@@ -6,7 +6,8 @@ use App\Models\ClassModel;
 use App\Models\Teacher;
 use App\Models\AcademicYear;
 use Illuminate\Http\Request;
-
+use App\Models\Student;
+use App\Models\Enrollment;
 class CoursesController extends Controller
 {
     public function index(Request $request)
@@ -71,5 +72,56 @@ class CoursesController extends Controller
     {
         $course->delete();
         return redirect()->route('admin.courses.index')->with('success', 'Kelas berhasil dihapus.');
+    }
+
+    public function manage(ClassModel $course)
+    {
+        $course->load(['enrollments.student.user', 'teacher.user', 'academicYear']);
+
+        $enrolledStudentIds = $course->enrollments->pluck('student.id')->toArray();
+
+        $students = Student::with('user')->whereNotIn('id', $enrolledStudentIds)->get();
+
+        return view('admin.courses.manage', compact('course', 'students'));
+    }
+
+    public function addStudent(Request $request, ClassModel $course)
+    {
+        $request->validate([
+            'student_id' => 'required|exists:students,id',
+        ]);
+
+        // Check if the student is already enrolled
+        $isEnrolled = Enrollment::where('class_id', $course->id)
+            ->where('student_id', $request->student_id)
+            ->exists();
+
+        if ($isEnrolled) {
+            return redirect()->back()->with('error', 'Siswa sudah terdaftar di kelas ini.');
+        }
+
+        Enrollment::create([
+            'class_id'         => $course->id,
+            'student_id'       => $request->student_id,
+            'academic_year_id' => $course->academic_year_id,
+            'enrollment_date'  => now(),
+            'status'           => 'active',
+        ]);
+
+        return redirect()->back()->with('success', 'Siswa berhasil ditambahkan ke kelas.');
+    }
+
+    public function removeStudent(Request $request, ClassModel $course, Student $student)
+    {
+        $enrollment = Enrollment::where('class_id', $course->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        if ($enrollment) {
+            $enrollment->delete();
+            return redirect()->back()->with('success', 'Siswa berhasil dihapus dari kelas.');
+        }
+
+        return redirect()->back()->with('error', 'Siswa tidak ditemukan di kelas ini.');
     }
 }

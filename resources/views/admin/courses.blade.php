@@ -105,6 +105,11 @@
                                                 @endif
                                             </button>
                                         </form>
+
+                                        <a href="{{ route('admin.courses.manage', $course->id) }}" class="btn btn-info btn-sm d-flex align-items-center gap-1">
+                                            <i class="bi bi-people-fill text-white"></i>
+                                            <span class="d-none d-sm-inline">Kelola</span>
+                                        </a>
                                     </td>
                                 </tr>
                             @empty

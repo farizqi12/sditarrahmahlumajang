@@ -51,8 +51,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('courses', CoursesController::class);
     Route::patch('courses/{course}/toggle-status', [CoursesController::class, 'toggleStatus'])->name('courses.toggleStatus');
+    Route::get('courses/{course}/manage', [CoursesController::class, 'manage'])->name('courses.manage');
+    Route::post('courses/{course}/add-student', [CoursesController::class, 'addStudent'])->name('courses.addStudent');
+    Route::delete('courses/{course}/remove-student/{student}', [CoursesController::class, 'removeStudent'])->name('courses.removeStudent');
     Route::resource('users', UserController::class)->names('users');
-    Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
+    Route::get('reports', [ReportsController::class, 'index'])->name('reports');
+    Route::get('reports/{class}', [ReportsController::class, 'showClassReport'])->name('reports.class');
     Route::post('academic-years', [AcademicYearController::class, 'store'])->name('academic-years.store');
     Route::resource('tabungan', WalletController::class)->names('tabungan');
     Route::resource('absensi', AbsensiController::class)->names('absensi');
