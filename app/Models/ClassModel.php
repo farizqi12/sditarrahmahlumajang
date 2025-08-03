@@ -16,6 +16,11 @@ class ClassModel extends Model
         'description',
         'teacher_id',
         'academic_year_id',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     public function teacher()

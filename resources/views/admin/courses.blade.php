@@ -46,56 +46,74 @@
         <x-notif></x-notif>
         <div class="card p-3 mt-4">
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                <h5 class="mb-0 fw-semibold d-flex align-items-center">
-                    <i class="bi bi-journal-bookmark-fill me-2 text-primary"></i> Daftar Mata Pelajaran
-                </h5>
-                <button class="btn btn-success d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm"
-                    data-bs-toggle="modal" data-bs-target="#addCourseModal">
-                    <i class="bi bi-plus-lg text-white"></i>
-                    <span class="d-none d-sm-inline">Tambah</span>
-                </button>
-            </div>
+                    <h5 class="mb-0 fw-semibold d-flex align-items-center">
+                        <i class="bi bi-journal-bookmark-fill me-2 text-primary"></i> Daftar Kelas
+                    </h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="{{ request()->query('show') === 'active' ? route('admin.courses.index') : route('admin.courses.index', ['show' => 'active']) }}" class="btn btn-outline-secondary btn-sm">
+                            {{ request()->query('show') === 'active' ? 'Tampilkan Semua' : 'Tampilkan Hanya Aktif' }}
+                        </a>
+                        <button class="btn btn-success d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm"
+                            data-bs-toggle="modal" data-bs-target="#addCourseModal">
+                            <i class="bi bi-plus-lg text-white"></i>
+                            <span class="d-none d-sm-inline">Tambah</span>
+                        </button>
+                    </div>
+                </div>
 
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Mata Pelajaran</th>
-                            <th>Guru</th>
-                            <th>Jumlah Siswa</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($courses as $course)
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
                             <tr>
-                                <td>{{ $course->name }}</td>
-                                <td>{{ $course->teacher->user->name }}</td>
-                                <td>{{ $course->students->count() }}</td>
-                                <td>
-                                    <!-- Tombol Edit dengan Icon -->
-                                    <button class="btn btn-primary btn-sm d-flex align-items-center gap-1"
-                                        data-bs-toggle="modal" data-bs-target="#editCourseModal{{ $course->id }}">
-                                        <i class="bi bi-pencil-square text-white"></i>
-                                        <span class="d-none d-sm-inline">Edit</span>
-                                    </button>
-
-                                    <!-- Tombol Hapus dengan Icon -->
-                                    <button class="btn btn-danger btn-sm d-flex align-items-center gap-1"
-                                        data-bs-toggle="modal" data-bs-target="#deleteCourseModal{{ $course->id }}">
-                                        <i class="bi bi-trash-fill text-white"></i>
-                                        <span class="d-none d-sm-inline">Hapus</span>
-                                    </button>
-                                </td>
-
+                                <th>Nama Kelas</th>
+                                <th>Guru</th>
+                                <th>Tahun Ajaran</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center">Tidak ada data mata pelajaran.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse ($courses as $course)
+                                <tr>
+                                    <td>{{ $course->name }}</td>
+                                    <td>{{ $course->teacher->user->name }}</td>
+                                    <td>{{ $course->academicYear->name }}</td>
+                                    <td>
+                                        @if ($course->is_active)
+                                            <span class="badge bg-success">Aktif</span>
+                                        @else
+                                            <span class="badge bg-secondary">Tidak Aktif</span>
+                                        @endif
+                                    </td>
+                                    <td class="d-flex gap-1">
+                                        <button class="btn btn-primary btn-sm d-flex align-items-center gap-1"
+                                            data-bs-toggle="modal" data-bs-target="#editCourseModal{{ $course->id }}">
+                                            <i class="bi bi-pencil-square text-white"></i>
+                                            <span class="d-none d-sm-inline">Edit</span>
+                                        </button>
+
+                                        <form action="{{ route('admin.courses.toggleStatus', $course->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn {{ $course->is_active ? 'btn-warning' : 'btn-info' }} btn-sm d-flex align-items-center gap-1">
+                                                @if ($course->is_active)
+                                                    <i class="bi bi-power text-white"></i>
+                                                    <span class="d-none d-sm-inline">Nonaktifkan</span>
+                                                @else
+                                                    <i class="bi bi-power text-white"></i>
+                                                    <span class="d-none d-sm-inline">Aktifkan</span>
+                                                @endif
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center">Tidak ada data kelas.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
             </div>
         </div>
     </div>
@@ -254,10 +272,10 @@
                     @csrf
                     @method('DELETE')
                     <div class="modal-body text-center">
-                        <p>Yakin ingin menghapus <strong>{{ $course->name }}</strong>?</p>
+                        <p>Yakin ingin mengarsipkan kelas <strong>{{ $course->name }}</strong>?<br><small>Kelas ini tidak akan muncul di daftar utama lagi tetapi datanya tidak akan hilang.</small></p>
                         <div class="d-flex justify-content-center gap-2">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-danger">Hapus</button>
+                            <button type="submit" class="btn btn-warning">Ya, Arsipkan</button>
                         </div>
                     </div>
                 </form>

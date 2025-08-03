@@ -20,6 +20,11 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        // Cek apakah email sudah ada
+        if (User::where('email', $request->email)->exists()) {
+            return redirect()->route('admin.users.index')->with('error', 'Email sudah digunakan oleh user lain.');
+        }
+
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|max:255|unique:users',
@@ -36,7 +41,6 @@ class UserController extends Controller
                 'role_id'  => $request->role_id,
             ]);
 
-            // Role ID 4 for Murid
             if ($request->role_id == 4) {
                 $currentYear = date('Y');
                 $lastStudent = \App\Models\Student::where('nis', 'like', $currentYear . '%')->latest('nis')->first();
@@ -55,7 +59,6 @@ class UserController extends Controller
                 ]);
             }
 
-            // Role ID 3 for Guru
             if ($request->role_id == 3) {
                 $user->teacher()->create(['nip' => $request->nip]);
             }
@@ -63,6 +66,7 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
     }
+
 
     public function update(Request $request, User $user)
     {

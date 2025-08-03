@@ -9,12 +9,29 @@ use Illuminate\Http\Request;
 
 class CoursesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $courses = ClassModel::with(['teacher.user', 'academicYear'])->latest()->paginate(10);
+        $query = ClassModel::with(['teacher.user', 'academicYear']);
+
+        // Default: show all. Filter to active if requested.
+        if ($request->query('show') === 'active') {
+            $query->where('is_active', true);
+        }
+
+        $courses = $query->latest()->paginate(10);
         $teachers = Teacher::with('user')->get();
-        $academicYears = AcademicYear::where('is_active', true)->get();
+        $academicYears = AcademicYear::all();
+
         return view('admin.courses', compact('courses', 'teachers', 'academicYears'));
+    }
+
+    public function toggleStatus(ClassModel $course)
+    {
+        $course->update(['is_active' => !$course->is_active]);
+
+        $message = $course->is_active ? 'Kelas berhasil diaktifkan.' : 'Kelas berhasil dinonaktifkan.';
+
+        return redirect()->route('admin.courses.index')->with('success', $message);
     }
 
     public function store(Request $request)

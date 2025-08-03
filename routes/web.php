@@ -50,6 +50,7 @@ Route::post('/logout', [Login::class, 'logout'])->name('logout');
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('courses', CoursesController::class);
+    Route::patch('courses/{course}/toggle-status', [CoursesController::class, 'toggleStatus'])->name('courses.toggleStatus');
     Route::resource('users', UserController::class)->names('users');
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
     Route::post('academic-years', [AcademicYearController::class, 'store'])->name('academic-years.store');
