@@ -11,9 +11,17 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with(['role', 'student', 'teacher'])->latest()->paginate(10);
+        $query = User::with(['role', 'student', 'teacher']);
+
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            $query->where('name', 'like', $searchTerm)
+                  ->orWhere('email', 'like', $searchTerm);
+        }
+
+        $users = $query->latest()->paginate(10)->withQueryString();
         $roles = Role::all();
         return view('admin.users', compact('users', 'roles'));
     }

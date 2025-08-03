@@ -9,21 +9,37 @@
             <h5 class="navbar-brand m-0">Dashboard</h5>
         </div>
 
-        <!-- Search Form (Visible on desktop) -->
-        <form class="search-form d-none d-lg-flex ms-auto">
-            <div class="position-relative w-100">
-                <i class="bi bi-search search-icon"></i>
-                <input class="form-control search-input" type="search" placeholder="Search courses..."
-                    aria-label="Search">
-            </div>
-        </form>
+        <!-- Dynamic Search Form -->
+        @php
+            $searchAction = '';
+            $searchPlaceholder = 'Search...';
+            if (request()->routeIs('admin.users.*')) {
+                $searchAction = route('admin.users.index');
+                $searchPlaceholder = 'Cari pengguna...';
+            } elseif (request()->routeIs('admin.courses.*')) {
+                $searchAction = route('admin.courses.index');
+                $searchPlaceholder = 'Cari kelas...';
+            }
+        @endphp
+
+        @if ($searchAction)
+            <!-- Desktop Search Form -->
+            <form action="{{ $searchAction }}" method="GET" class="search-form d-none d-lg-flex ms-auto">
+                <div class="position-relative w-100">
+                    <i class="bi bi-search search-icon"></i>
+                    <input class="form-control search-input" type="search" name="search" placeholder="{{ $searchPlaceholder }}" value="{{ request('search') }}" aria-label="Search">
+                </div>
+            </form>
+        @endif
 
         <!-- Right Side Items -->
         <div class="d-flex align-items-center ms-auto">
             <!-- Mobile Search Button -->
+            @if ($searchAction)
             <button class="btn btn-link text-dark me-2 d-lg-none" id="mobileSearchBtn">
                 <i class="bi bi-search"></i>
             </button>
+            @endif
 
             <!-- Notifications -->
             <div class="dropdown me-2 position-relative">
@@ -77,17 +93,19 @@
 </nav>
 
 <!-- Mobile Search Form -->
+@if ($searchAction)
 <div class="container-fluid mobile-search-form" id="mobileSearchForm">
-    <form class="d-flex w-100">
+    <form action="{{ $searchAction }}" method="GET" class="d-flex w-100">
         <div class="position-relative w-100">
             <i class="bi bi-search search-icon"></i>
-            <input class="form-control search-input" type="search" placeholder="Search courses..." aria-label="Search">
+            <input class="form-control search-input" type="search" name="search" placeholder="{{ $searchPlaceholder }}" value="{{ request('search') }}" aria-label="Search">
             <button type="button" class="btn btn-link" id="closeSearchBtn">
                 <i class="bi bi-x"></i>
             </button>
         </div>
     </form>
 </div>
+@endif
 
 <style>
     /* Navbar Layout */

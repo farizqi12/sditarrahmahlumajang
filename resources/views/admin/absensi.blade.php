@@ -55,21 +55,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const sidebarToggler = document.getElementById("sidebarToggler");
-            const sidebar = document.getElementById("sidebar");
-            const sidebarOverlay = document.getElementById("sidebarOverlay");
-
-            function toggleSidebar() {
-                sidebar.classList.toggle("active");
-                sidebarOverlay.classList.toggle("active");
-            }
-
-            sidebarToggler.addEventListener("click", toggleSidebar);
-            sidebarOverlay.addEventListener("click", toggleSidebar);
-        });
-    </script>
 </body>
 
 </html>

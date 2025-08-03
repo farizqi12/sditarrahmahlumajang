@@ -18,7 +18,12 @@ class CoursesController extends Controller
             $query->where('is_active', true);
         }
 
-        $courses = $query->latest()->paginate(10);
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            $query->where('name', 'like', $searchTerm);
+        }
+
+        $courses = $query->latest()->paginate(10)->withQueryString();
         $teachers = Teacher::with('user')->get();
         $academicYears = AcademicYear::all();
 
