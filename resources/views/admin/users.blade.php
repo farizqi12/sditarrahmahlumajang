@@ -93,7 +93,6 @@
                                             <span class="d-none d-sm-inline">Hapus</span>
                                         </button>
                                     </form>
-
                                 </td>
                             </tr>
                         @empty

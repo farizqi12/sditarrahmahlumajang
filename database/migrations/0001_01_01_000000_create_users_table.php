@@ -79,7 +79,12 @@ return new class extends Migration
         Schema::create('wallet_transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('wallet_id')->constrained()->onDelete('cascade');
-            $table->enum('type', ['deposit', 'withdrawal', 'tabungan_in', 'tabungan_out', 'transfer_in', 'transfer_out']);
+            $table->enum('type', [
+                'deposit',
+                'withdrawal',
+                'transfer_in',
+                'transfer_out'
+            ]);
             $table->decimal('amount', 12, 2);
             $table->decimal('balance_before', 12, 2);
             $table->decimal('balance_after', 12, 2);

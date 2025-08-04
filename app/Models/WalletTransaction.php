@@ -17,6 +17,7 @@ class WalletTransaction extends Model
         'balance_after',
         'description',
         'created_by',
+        'status',
     ];
 
     public function wallet()

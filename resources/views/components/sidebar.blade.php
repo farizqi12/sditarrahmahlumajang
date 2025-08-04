@@ -87,7 +87,7 @@
     </a>
 
     <a href="{{ url('/admin/courses') }}"
-        class="{{ Request::is('courses') || Request::is('*/courses') ? 'active' : '' }}">
+        class="{{ Request::is('courses') || Request::is('*/courses') || Request::is('*/courses/*') ? 'active' : '' }}">
         <i class="bi bi-book me-2"></i> Courses
     </a>
 

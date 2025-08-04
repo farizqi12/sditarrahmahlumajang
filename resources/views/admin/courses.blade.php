@@ -10,6 +10,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/admin/courses.css') }}">
     <style>
+
+    </style>
+    <style>
         .btn-success i {
             font-size: 1.1rem;
         }
@@ -51,7 +54,7 @@
                     </h5>
                     <div class="d-flex align-items-center gap-2">
                         <a href="{{ request()->query('show') === 'active' ? route('admin.courses.index') : route('admin.courses.index', ['show' => 'active']) }}" class="btn btn-outline-secondary btn-sm">
-                            {{ request()->query('show') === 'active' ? 'Tampilkan Semua' : 'Tampilkan Hanya Aktif' }}
+                            {{ request()->query('show') === 'active' ? 'Tampilkan Semua' : 'Tampilkan Aktif' }}
                         </a>
                         <button class="btn btn-success d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm"
                             data-bs-toggle="modal" data-bs-target="#addCourseModal">
@@ -134,7 +137,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label>Nama Mata Pelajaran</label>
+                        <label>Nama Kelas</label>
                         <input type="text" name="name" class="form-control" required>
                     </div>
                     <div class="mb-3">
@@ -219,12 +222,12 @@
                     @csrf
                     @method('PUT')
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Mata Pelajaran</h5>
+                        <h5 class="modal-title">Edit Kelas</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label>Nama Mata Pelajaran</label>
+                            <label>Nama Kelas</label>
                             <input type="text" name="name" class="form-control" value="{{ $course->name }}"
                                 required>
                         </div>

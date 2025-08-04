@@ -16,7 +16,6 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Ambil peran (roles) dari database
         $roles = Role::pluck('id', 'name');
 
         // Data pengguna (users)
@@ -57,7 +56,6 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $userData) {
-            // Buat atau update user berdasarkan email
             $user = User::updateOrCreate(
                 ['email' => $userData['email']],
                 [
@@ -67,7 +65,6 @@ class UserSeeder extends Seeder
                 ]
             );
 
-            // Jika peran adalah guru, buat atau update data guru
             if ($userData['role_name'] === 'guru') {
                 Teacher::updateOrCreate(
                     ['user_id' => $user->id],
@@ -75,7 +72,6 @@ class UserSeeder extends Seeder
                 );
             }
 
-            // Jika peran adalah murid, buat atau update data siswa
             if ($userData['role_name'] === 'murid') {
                 Student::updateOrCreate(
                     ['user_id' => $user->id],

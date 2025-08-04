@@ -58,7 +58,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('reports', [ReportsController::class, 'index'])->name('reports');
     Route::get('reports/{class}', [ReportsController::class, 'showClassReport'])->name('reports.class');
     Route::post('academic-years', [AcademicYearController::class, 'store'])->name('academic-years.store');
-    Route::resource('tabungan', WalletController::class)->names('tabungan');
+    Route::resource('tabungan', WalletController::class)->names('tabungan')->except(['create', 'edit', 'update', 'destroy']);
+    Route::post('tabungan/{user}', [WalletController::class, 'store'])->name('tabungan.store');
+    Route::get('tabungan/pending', [WalletController::class, 'pending'])->name('tabungan.pending');
+    Route::patch('tabungan/pending/{transaction}/accept', [WalletController::class, 'acceptTransaction'])->name('tabungan.accept');
+    Route::post('tabungan/pending/{transaction}/reject', [WalletController::class, 'rejectTransaction'])->name('tabungan.reject');
     Route::resource('absensi', AbsensiController::class)->names('absensi');
     Route::post('/absensi/checkin', [AbsensiController::class, 'checkIn'])->name('absensi.checkin');
     Route::post('/absensi/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');

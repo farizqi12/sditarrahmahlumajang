@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             AttendanceLocationSeeder::class,
             UserSeeder::class,
+            WalletSeeder::class,
+            PendingTransactionSeeder::class,
         ]);
     }
 }
