@@ -70,6 +70,12 @@ class UserController extends Controller
             if ($request->role_id == 3) {
                 $user->teacher()->create(['nip' => $request->nip]);
             }
+
+            // Create a wallet for the user if they are not an admin
+            $role = Role::find($request->role_id);
+            if ($role && $role->name !== 'admin') {
+                $user->wallet()->create(['balance' => 0]);
+            }
         });
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');

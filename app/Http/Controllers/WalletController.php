@@ -16,25 +16,29 @@ class WalletController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with(['wallet.transactions', 'student.enrollments.classModel'])
+        $userQuery = User::with(['wallet.transactions', 'student.enrollments.classModel'])
             ->whereHas('role', function ($q) {
                 $q->whereIn('name', ['murid', 'guru']);
             });
 
+        $pendingQuery = WalletTransaction::where('status', 'pending')
+            ->with(['wallet.user.student.enrollments.classModel', 'wallet.user.role']);
+
         if ($request->filled('search')) {
             $searchTerm = '%' . $request->search . '%';
-            $query->where(function ($q) use ($searchTerm) {
+
+            $userQuery->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'like', $searchTerm)
                     ->orWhere('email', 'like', $searchTerm);
             });
+
+            $pendingQuery->whereHas('wallet.user', function ($q) use ($searchTerm) {
+                $q->where('name', 'like', $searchTerm);
+            });
         }
 
-        $users = $query->latest()->get(); // get all untuk tabel pertama
-
-        $pendingTransactions = WalletTransaction::where('status', 'pending')
-            ->with(['wallet.user.student.enrollments.classModel', 'wallet.user.role'])
-            ->latest()
-            ->get(); // untuk tabel kedua
+        $users = $userQuery->latest()->get();
+        $pendingTransactions = $pendingQuery->latest()->get();
 
         return view('admin.wallet.index', compact('users', 'pendingTransactions'));
     }

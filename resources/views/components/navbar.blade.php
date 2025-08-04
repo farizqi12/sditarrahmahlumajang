@@ -19,6 +19,9 @@
             } elseif (request()->routeIs('admin.courses.*')) {
                 $searchAction = route('admin.courses.index');
                 $searchPlaceholder = 'Cari kelas...';
+            } elseif (request()->routeIs('admin.tabungan.*')) {
+                $searchAction = route('admin.tabungan.index');
+                $searchPlaceholder = 'Cari pengguna...';
             }
         @endphp
 
