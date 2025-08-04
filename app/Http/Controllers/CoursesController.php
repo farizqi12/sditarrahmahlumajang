@@ -80,7 +80,7 @@ class CoursesController extends Controller
 
         $enrolledStudentIds = $course->enrollments->pluck('student.id')->toArray();
 
-        $students = Student::with('user')->whereNotIn('id', $enrolledStudentIds)->get();
+        $students = Student::with(['user', 'enrollments.classModel'])->whereNotIn('id', $enrolledStudentIds)->get();
 
         return view('admin.courses.manage', compact('course', 'students'));
     }

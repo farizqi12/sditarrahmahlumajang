@@ -16,7 +16,7 @@ class WalletController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with('wallet.transactions')
+        $query = User::with(['wallet.transactions', 'student.enrollments.classModel'])
             ->whereHas('role', function ($q) {
                 $q->whereIn('name', ['murid', 'guru']);
             });
@@ -32,7 +32,7 @@ class WalletController extends Controller
         $users = $query->latest()->get(); // get all untuk tabel pertama
 
         $pendingTransactions = WalletTransaction::where('status', 'pending')
-            ->with('wallet.user')
+            ->with(['wallet.user.student.enrollments.classModel', 'wallet.user.role'])
             ->latest()
             ->get(); // untuk tabel kedua
 

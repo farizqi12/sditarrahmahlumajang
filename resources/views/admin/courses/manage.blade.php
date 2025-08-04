@@ -53,6 +53,7 @@
                                     <th>No</th>
                                     <th>NIS</th>
                                     <th>Nama Siswa</th>
+                                    <th>Kelas</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -62,6 +63,7 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $enrollment->student->nis }}</td>
                                         <td>{{ $enrollment->student->user->name }}</td>
+                                        <td>{{ $course->name }}</td>
                                         <td>
                                             <form action="{{ route('admin.courses.removeStudent', [$course->id, $enrollment->student->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini dari kelas?');">
                                                 @csrf

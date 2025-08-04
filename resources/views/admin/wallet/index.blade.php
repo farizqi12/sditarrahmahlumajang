@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{{ asset('css/admin/dashboard.css') }}">
 </head>
 
-<body>
+<body>-
     <!-- Sidebar -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <x-sidebar></x-sidebar>
@@ -39,7 +39,13 @@
                         @forelse($users as $user)
                             <tr>
                                 <td>{{ $user->name }}</td>
-                                <td>{{ $user->class_name ?? '-' }}</td>
+                                <td>
+                                    @if ($user->role->name === 'murid' && $user->student && $user->student->enrollments->isNotEmpty())
+                                        {{ $user->student->enrollments->first()->classModel->name ?? 'Tidak terdaftar' }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                                 <td>Rp {{ number_format($user->wallet->balance ?? 0, 0, ',', '.') }}</td>
                                 <td>
                                     {{ optional($user->wallet?->transactions?->sortByDesc('created_at')->first())->created_at?->format('d F Y') ?? '-' }}
@@ -76,7 +82,13 @@
                         @forelse($pendingTransactions as $trx)
                             <tr>
                                 <td>{{ $trx->wallet->user->name }}</td>
-                                <td>{{ $trx->wallet->user->class_name ?? '-' }}</td>
+                                <td>
+                                    @if ($trx->wallet->user->role->name === 'murid' && $trx->wallet->user->student && $trx->wallet->user->student->enrollments->isNotEmpty())
+                                        {{ $trx->wallet->user->student->enrollments->first()->classModel->name ?? 'Tidak terdaftar' }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                                 <td>Rp {{ number_format($trx->amount, 0, ',', '.') }}</td>
                                 <td>{{ $trx->type === 'deposit' ? 'Setor' : 'Tarik' }}</td>
                                 <td>{{ $trx->created_at->format('d F Y') }}</td>
@@ -90,40 +102,51 @@
                                 </td>
                                 <td>
                                     <!-- Tombol Terima -->
-                                    <form method="POST" action="{{ route('admin.tabungan.accept', $trx->id) }}" class="d-inline">
+                                    <form method="POST" action="{{ route('admin.tabungan.accept', $trx->id) }}"
+                                        class="d-inline">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="btn btn-sm btn-success me-1" title="Terima Transaksi">
+                                        <button type="submit" class="btn btn-sm btn-success me-1"
+                                            title="Terima Transaksi">
                                             <i class="bi bi-check-circle"></i> Terima
                                         </button>
                                     </form>
                                     <!-- Tombol Tolak (dengan modal) -->
-                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal-{{ $trx->id }}" title="Tolak Transaksi">
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                        data-bs-target="#rejectModal-{{ $trx->id }}" title="Tolak Transaksi">
                                         <i class="bi bi-x-circle"></i> Tolak
                                     </button>
                                 </td>
                             </tr>
 
                             <!-- Modal Penolakan -->
-                            <div class="modal fade" id="rejectModal-{{ $trx->id }}" tabindex="-1" aria-labelledby="rejectModalLabel-{{ $trx->id }}" aria-hidden="true">
+                            <div class="modal fade" id="rejectModal-{{ $trx->id }}" tabindex="-1"
+                                aria-labelledby="rejectModalLabel-{{ $trx->id }}" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="rejectModalLabel-{{ $trx->id }}">Tolak Transaksi</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <h5 class="modal-title" id="rejectModalLabel-{{ $trx->id }}">Tolak
+                                                Transaksi</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                         </div>
                                         <form method="POST" action="{{ route('admin.tabungan.reject', $trx->id) }}">
                                             @csrf
                                             <div class="modal-body">
-                                                <p>Anda yakin ingin menolak transaksi dari <strong>{{ $trx->wallet->user->name }}</strong> sebesar <strong>Rp {{ number_format($trx->amount, 0, ',', '.') }}</strong>?</p>
+                                                <p>Anda yakin ingin menolak transaksi dari
+                                                    <strong>{{ $trx->wallet->user->name }}</strong> sebesar <strong>Rp
+                                                        {{ number_format($trx->amount, 0, ',', '.') }}</strong>?</p>
                                                 <div class="mb-3">
-                                                    <label for="rejection_reason-{{ $trx->id }}" class="form-label">Alasan Penolakan (Opsional)</label>
+                                                    <label for="rejection_reason-{{ $trx->id }}"
+                                                        class="form-label">Alasan Penolakan (Opsional)</label>
                                                     <textarea class="form-control" id="rejection_reason-{{ $trx->id }}" name="rejection_reason" rows="3"></textarea>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                <button type="submit" class="btn btn-danger">Ya, Tolak Transaksi</button>
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-danger">Ya, Tolak
+                                                    Transaksi</button>
                                             </div>
                                         </form>
                                     </div>
