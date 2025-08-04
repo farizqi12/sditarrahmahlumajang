@@ -9,7 +9,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-    <link rel="stylesheet" href="{{ asset('css/admin/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin/wallet.css') }}">
+    <style>
+        .btn-xs {
+            padding: 0.25rem 0.4rem;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            border-radius: 0.2rem;
+        }
+
+        .btn-xs i.bi {
+            font-size: 1rem;
+            /* Ukuran lebih kecil untuk icon */
+        }
+
+        .btn-xs .small {
+            font-size: 1rem;
+            /* Ukuran lebih kecil untuk teks */
+        }
+    </style>
 </head>
 
 <body>-
@@ -83,7 +101,10 @@
                             <tr>
                                 <td>{{ $trx->wallet->user->name }}</td>
                                 <td>
-                                    @if ($trx->wallet->user->role->name === 'murid' && $trx->wallet->user->student && $trx->wallet->user->student->enrollments->isNotEmpty())
+                                    @if (
+                                        $trx->wallet->user->role->name === 'murid' &&
+                                            $trx->wallet->user->student &&
+                                            $trx->wallet->user->student->enrollments->isNotEmpty())
                                         {{ $trx->wallet->user->student->enrollments->first()->classModel->name ?? 'Tidak terdaftar' }}
                                     @else
                                         -
@@ -100,21 +121,23 @@
                                         <span class="text-muted">-</span>
                                     @endif
                                 </td>
-                                <td>
+                                <td class="text-nowrap">
                                     <!-- Tombol Terima -->
                                     <form method="POST" action="{{ route('admin.tabungan.accept', $trx->id) }}"
                                         class="d-inline">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="btn btn-sm btn-success me-1"
+                                        <button type="submit" class="btn btn-xs btn-success me-1"
                                             title="Terima Transaksi">
-                                            <i class="bi bi-check-circle"></i> Terima
+                                            <i class="bi bi-check-circle"></i> <span
+                                                class="d-none d-sm-inline">Terima</span>
                                         </button>
                                     </form>
+
                                     <!-- Tombol Tolak (dengan modal) -->
-                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                    <button type="button" class="btn btn-xs btn-danger" data-bs-toggle="modal"
                                         data-bs-target="#rejectModal-{{ $trx->id }}" title="Tolak Transaksi">
-                                        <i class="bi bi-x-circle"></i> Tolak
+                                        <i class="bi bi-x-circle"></i> <span class="d-none d-sm-inline">Tolak</span>
                                     </button>
                                 </td>
                             </tr>
@@ -135,7 +158,8 @@
                                             <div class="modal-body">
                                                 <p>Anda yakin ingin menolak transaksi dari
                                                     <strong>{{ $trx->wallet->user->name }}</strong> sebesar <strong>Rp
-                                                        {{ number_format($trx->amount, 0, ',', '.') }}</strong>?</p>
+                                                        {{ number_format($trx->amount, 0, ',', '.') }}</strong>?
+                                                </p>
                                                 <div class="mb-3">
                                                     <label for="rejection_reason-{{ $trx->id }}"
                                                         class="form-label">Alasan Penolakan (Opsional)</label>
