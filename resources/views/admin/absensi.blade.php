@@ -14,6 +14,7 @@
         crossorigin="anonymous"
     />
     <link rel="stylesheet" href="{{ asset('css/admin/absensi.css') }}">
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ config('maps.google_maps_api_key') }}&libraries=places&callback=initMap" async defer></script>
 </head>
 
 <body>
@@ -24,6 +25,82 @@
         <x-navbar></x-navbar>
         <x-notif></x-notif>
         <div class="card p-3 mt-4">
+            <h5>Manajemen Lokasi Absensi</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <input id="pac-input" class="form-control mb-2" type="text" placeholder="Cari Lokasi...">
+                    <div id="map" style="height: 400px; width: 100%;"></div>
+                </div>
+                <div class="col-md-6">
+                    <form action="{{ route('admin.absensi.locations.store') }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="locationName" class="form-label">Nama Lokasi</label>
+                            <input type="text" class="form-control" id="locationName" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="latitude" class="form-label">Latitude</label>
+                            <input type="text" class="form-control" id="latitude" name="latitude" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="longitude" class="form-label">Longitude</label>
+                            <input type="text" class="form-control" id="longitude" name="longitude" readonly required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="radius" class="form-label">Radius (meter)</label>
+                            <input type="number" class="form-control" id="radius" name="radius" value="100" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="roles" class="form-label">Peran yang Diizinkan</label>
+                            <select class="form-select" id="roles" name="roles[]" multiple required>
+                                @foreach ($roles as $role)
+                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Simpan Lokasi</button>
+                    </form>
+                </div>
+            </div>
+            <hr>
+            <h5>Daftar Lokasi</h5>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Nama Lokasi</th>
+                            <th>Radius</th>
+                            <th>Peran</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($locations as $location)
+                        <tr>
+                            <td>{{ $location->name }}</td>
+                            <td>{{ $location->radius_meter }} meter</td>
+                            <td>
+                                @foreach ($location->roles as $role)
+                                    <span class="badge bg-info">{{ $role->name }}</span>
+                                @endforeach
+                            </td>
+                            <td>
+                                <form action="{{ route('admin.absensi.locations.destroy', $location) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus lokasi ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="3" class="text-center">Belum ada lokasi yang ditambahkan.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <hr>
             <h5>Data Absensi</h5>
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
@@ -55,6 +132,103 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+    <script>
+        let map, marker, circle;
+
+        new TomSelect("#roles",{
+            plugins: ['remove_button'],
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            }
+        });
+
+        function initMap() {
+            const initialPosition = { lat: -8.1689, lng: 113.7169 }; // Default Lumajang
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: initialPosition,
+                zoom: 15
+            });
+
+            marker = new google.maps.Marker({
+                position: initialPosition,
+                map: map,
+                draggable: true
+            });
+
+            circle = new google.maps.Circle({
+                map: map,
+                radius: 100, // Initial radius
+                fillColor: '#AA0000',
+                fillOpacity: 0.3,
+                strokeColor: '#AA0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+            });
+
+            circle.bindTo('center', marker, 'position');
+
+            google.maps.event.addListener(marker, 'dragend', function(event) {
+                document.getElementById('latitude').value = event.latLng.lat();
+                document.getElementById('longitude').value = event.latLng.lng();
+            });
+
+            document.getElementById('radius').addEventListener('input', function() {
+                const radiusValue = parseInt(this.value, 10);
+                if (!isNaN(radiusValue)) {
+                    circle.setRadius(radiusValue);
+                }
+            });
+
+            // Set initial form values
+            document.getElementById('latitude').value = initialPosition.lat;
+            document.getElementById('longitude').value = initialPosition.lng;
+
+            // Create the search box and link it to the UI element.
+            const input = document.getElementById('pac-input');
+            const searchBox = new google.maps.places.SearchBox(input);
+            map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+            // Bias the SearchBox results towards current map's viewport.
+            map.addListener('bounds_changed', () => {
+                searchBox.setBounds(map.getBounds());
+            });
+
+            // Listen for the event fired when the user selects a prediction and retrieve
+            // more details for that place.
+            searchBox.addListener('places_changed', () => {
+                const places = searchBox.getPlaces();
+
+                if (places.length == 0) {
+                    return;
+                }
+
+                // For each place, get the icon, name and location.
+                const bounds = new google.maps.LatLngBounds();
+                places.forEach((place) => {
+                    if (!place.geometry || !place.geometry.location) {
+                        console.log("Returned place contains no geometry");
+                        return;
+                    }
+
+                    marker.setPosition(place.geometry.location);
+                    document.getElementById('latitude').value = place.geometry.location.lat();
+                    document.getElementById('longitude').value = place.geometry.location.lng();
+
+                    if (place.geometry.viewport) {
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+                map.fitBounds(bounds);
+            });
+        }
+    </script>
 </body>
 
 </html>

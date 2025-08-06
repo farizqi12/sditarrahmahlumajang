@@ -20,4 +20,9 @@ class AttendanceLocation extends Model
     {
         return $this->hasMany(Attendance::class, 'location_id');
     }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'attendance_location_role');
+    }
 }
