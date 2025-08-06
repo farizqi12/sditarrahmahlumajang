@@ -17,4 +17,9 @@ class Role extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function attendanceLocations()
+    {
+        return $this->belongsToMany(AttendanceLocation::class, 'attendance_location_role');
+    }
 }

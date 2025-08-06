@@ -7,6 +7,8 @@ use App\Models\AttendanceLocation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
+use App\Models\Role;
 
 class AbsensiController extends Controller
 {
@@ -28,7 +30,9 @@ class AbsensiController extends Controller
                                        ->latest('date')
                                        ->paginate(10);
 
-        return view('admin.absensi', compact('attendanceToday', 'locations', 'attendanceHistory'));
+        $roles = Role::all();
+
+        return view('admin.absensi', compact('attendanceToday', 'locations', 'attendanceHistory', 'roles'));
     }
 
     public function checkIn(Request $request)
@@ -103,5 +107,40 @@ class AbsensiController extends Controller
         ]);
 
         return response()->json(['success' => true, 'message' => 'Check-out berhasil!']);
+    }
+
+    public function storeLocation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'radius' => 'required|numeric|min:1',
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,id',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin.absensi.index')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $location = AttendanceLocation::create([
+            'name' => $request->name,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'radius_meter' => $request->radius,
+        ]);
+
+        $location->roles()->sync($request->roles);
+
+        return redirect()->route('admin.absensi.index')->with('success', 'Lokasi berhasil ditambahkan.');
+    }
+
+    public function destroyLocation(AttendanceLocation $location)
+    {
+        $location->delete();
+        return redirect()->route('admin.absensi.index')->with('success', 'Lokasi berhasil dihapus.');
     }
 }

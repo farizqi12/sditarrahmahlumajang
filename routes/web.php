@@ -66,6 +66,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('absensi', AbsensiController::class)->names('absensi');
     Route::post('/absensi/checkin', [AbsensiController::class, 'checkIn'])->name('absensi.checkin');
     Route::post('/absensi/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');
+    Route::post('absensi/locations', [AbsensiController::class, 'storeLocation'])->name('absensi.locations.store');
+    Route::delete('absensi/locations/{location}', [AbsensiController::class, 'destroyLocation'])->name('absensi.locations.destroy');
 });
 
 // Kepala Sekolah Routes
