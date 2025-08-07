@@ -33,4 +33,9 @@ class Subject extends Model
     {
         return $this->hasMany(Schedule::class);
     }
+
+    public function submissions()
+    {
+        return $this->hasManyThrough(Submission::class, Assignment::class);
+    }
 }

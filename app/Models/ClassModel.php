@@ -62,4 +62,16 @@ class ClassModel extends Model
     {
         return $this->belongsTo(AcademicYear::class);
     }
+
+    public function submissions()
+    {
+        return $this->hasManyThrough(
+            Submission::class,
+            Assignment::class,
+            'class_id', // Foreign key on assignments table...
+            'assignment_id', // Foreign key on submissions table...
+            'id', // Local key on classes table...
+            'id' // Local key on assignments table...
+        );
+    }
 }

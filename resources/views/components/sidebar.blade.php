@@ -114,10 +114,13 @@
 
         {{-- Menu khusus Kepala Sekolah --}}
         @if (Auth::user()->role->name == 'kepala_sekolah')
-            <a href="#">
+            <a href="" class="{{ Request::is('kepala_sekolah/absensi*') ? 'active' : '' }}">
+                <i class="bi bi-calendar-check me-2"></i> Absensi
+            </a>
+            <a href="" class="{{ Request::is('kepala_sekolah/laporan-akademik*') ? 'active' : '' }}">
                 <i class="bi bi-graph-up me-2"></i> Laporan Akademik
             </a>
-            <a href="#">
+            <a href="" class="{{ Request::is('kepala_sekolah/laporan-keuangan*') ? 'active' : '' }}">
                 <i class="bi bi-cash-coin me-2"></i> Laporan Keuangan
             </a>
         @endif
@@ -150,8 +153,8 @@
 
         {{-- Menu khusus Staff TU --}}
         @if (Auth::user()->role->name == 'staff_tu')
-            <a href="#">
-                <i class="bi bi-credit-card me-2"></i> Pembayaran SPP
+            <a href="{{ route('staff_tu.absensi.index') }}" class="{{ Request::is('staff_tu/absensi*') ? 'active' : '' }}">
+                <i class="bi bi-calendar-check me-2"></i> Absensi
             </a>
             <a href="#">
                 <i class="bi bi-person-rolodex me-2"></i> Data Siswa
