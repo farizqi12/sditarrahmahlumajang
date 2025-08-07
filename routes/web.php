@@ -1,15 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\AcademicYearController;
-use App\Http\Controllers\Admin\Login;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\CoursesController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\ReportsController;
-use App\Http\Controllers\Admin\AbsensiController;
+use App\Http\Controllers\AcademicYearController;
+use App\Http\Controllers\Login;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CoursesController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\AbsensiController;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Admin\WalletController;
+use App\Http\Controllers\WalletController;
+use App\Http\Controllers\AbsensiControllerKepsek;
 
 Route::get('/', function () {
     if (!Auth::check()) {
@@ -73,7 +74,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 // Kepala Sekolah Routes
 Route::middleware(['auth', 'role:kepala_sekolah'])->prefix('kepala_sekolah')->name('kepala_sekolah.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-});
+    Route::resource('/absensi', AbsensiControllerKepsek::class)->names('absensi');
+}); 
 
 // Guru Routes
 Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {

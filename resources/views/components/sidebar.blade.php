@@ -79,36 +79,86 @@
     }
 </style>
 <div class="sidebar" id="sidebar">
-    <h4 class="text-white text-center mb-4">E-Learning Admin</h4>
+    @auth
+        <h4 class="text-white text-center mb-4">E-Learning {{ ucfirst(str_replace('_', ' ', Auth::user()->role->name)) }}</h4>
 
-    <a href="{{ url('/admin/dashboard') }}"
-        class="{{ Request::is('dashboard') || Request::is('*/dashboard') ? 'active' : '' }}">
-        <i class="bi bi-house-door me-2"></i> Dashboard
-    </a>
+        {{-- Menu untuk semua role --}}
+        <a href="{{ route(Auth::user()->role->name . '.dashboard') }}"
+            class="{{ Request::is(Auth::user()->role->name . '/dashboard') ? 'active' : '' }}">
+            <i class="bi bi-house-door me-2"></i> Dashboard
+        </a>
 
-    <a href="{{ url('/admin/courses') }}"
-        class="{{ Request::is('courses') || Request::is('*/courses') || Request::is('*/courses/*') ? 'active' : '' }}">
-        <i class="bi bi-book me-2"></i> Courses
-    </a>
+        {{-- Menu khusus Admin --}}
+        @if (Auth::user()->role->name == 'admin')
+            <a href="{{ route('admin.courses.index') }}"
+                class="{{ Request::is('admin/courses*') ? 'active' : '' }}">
+                <i class="bi bi-book me-2"></i> Courses
+            </a>
+            <a href="{{ route('admin.users.index') }}"
+                class="{{ Request::is('admin/users*') ? 'active' : '' }}">
+                <i class="bi bi-people me-2"></i> Users
+            </a>
+            <a href="{{ route('admin.absensi.index') }}"
+                class="{{ Request::is('admin/absensi*') ? 'active' : '' }}">
+                <i class="bi bi-calendar-check me-2"></i> Absensi
+            </a>
+            <a href="{{ route('admin.reports') }}"
+                class="{{ Request::is('admin/reports*') ? 'active' : '' }}">
+                <i class="bi bi-bar-chart me-2"></i> Reports
+            </a>
+            <a href="{{ route('admin.tabungan.index') }}"
+                class="{{ Request::is('admin/tabungan*') ? 'active' : '' }}">
+                <i class="bi bi-wallet2 me-2"></i> Tabungan
+            </a>
+        @endif
 
-    <a href="{{ url('/admin/users') }}" class="{{ Request::is('users') || Request::is('*/users') ? 'active' : '' }}">
-        <i class="bi bi-people me-2"></i> Users
-    </a>
+        {{-- Menu khusus Kepala Sekolah --}}
+        @if (Auth::user()->role->name == 'kepala_sekolah')
+            <a href="#">
+                <i class="bi bi-graph-up me-2"></i> Laporan Akademik
+            </a>
+            <a href="#">
+                <i class="bi bi-cash-coin me-2"></i> Laporan Keuangan
+            </a>
+        @endif
 
-    <a href="{{ url('/admin/absensi') }}"
-        class="{{ Request::is('absensi') || Request::is('*/absensi') ? 'active' : '' }}">
-        <i class="bi bi-floppy me-2"></i> Absensi
-    </a>
+        {{-- Menu khusus Guru --}}
+        @if (Auth::user()->role->name == 'guru')
+            <a href="#">
+                <i class="bi bi-book-half me-2"></i> Kelas Saya
+            </a>
+            <a href="#">
+                <i class="bi bi-journal-check me-2"></i> Materi & Tugas
+            </a>
+            <a href="#">
+                <i class="bi bi-person-check me-2"></i> Absensi Siswa
+            </a>
+        @endif
 
-    <a href="{{ url('/admin/reports') }}"
-        class="{{ Request::is('reports') || Request::is('*/reports') ? 'active' : '' }}">
-        <i class="bi bi-bar-chart me-2"></i> Reports
-    </a>
+        {{-- Menu khusus Murid --}}
+        @if (Auth::user()->role->name == 'murid')
+            <a href="#">
+                <i class="bi bi-book-reader me-2"></i> Jadwal Pelajaran
+            </a>
+            <a href="#">
+                <i class="bi bi-pen me-2"></i> Tugas
+            </a>
+            <a href="#">
+                <i class="bi bi-wallet me-2"></i> Tabungan Saya
+            </a>
+        @endif
 
-    <a href="{{ url('/admin/tabungan') }}"
-        class="{{ Request::is('tabungan') || Request::is('*/tabungan') ? 'active' : '' }}">
-        <i class="bi bi-wallet2 me-2"></i> Tabungan
-    </a>
+        {{-- Menu khusus Staff TU --}}
+        @if (Auth::user()->role->name == 'staff_tu')
+            <a href="#">
+                <i class="bi bi-credit-card me-2"></i> Pembayaran SPP
+            </a>
+            <a href="#">
+                <i class="bi bi-person-rolodex me-2"></i> Data Siswa
+            </a>
+        @endif
+
+    @endauth
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function() {

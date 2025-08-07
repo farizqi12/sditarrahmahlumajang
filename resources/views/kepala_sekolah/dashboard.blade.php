@@ -24,10 +24,10 @@
                 <div class="card p-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1">Total Users</h6>
+                            <h6 class="mb-1">Absen Hari ini</h6>
                             <h3 class="mb-0"></h3>
                         </div>
-                        <i class="bi bi-people text-primary"></i>
+                        <i class="bi bi-clipboard-check-fill text-primary"></i>
                     </div>
                 </div>
             </div>
@@ -35,10 +35,10 @@
                 <div class="card p-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1">Total Murid</h6>
+                            <h6 class="mb-1">Ijin Hari ini</h6>
                             <h3 class="mb-0"></h3>
                         </div>
-                        <i class="bi bi-person-fill text-success"></i>
+                        <i class="bi bi-door-open-fill text-warning"></i>
                     </div>
                 </div>
             </div>
@@ -46,10 +46,10 @@
                 <div class="card p-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1">Total Guru</h6>
+                            <h6 class="mb-1">Tabungan Masuk</h6>
                             <h3 class="mb-0"></h3>
                         </div>
-                        <i class="bi bi-person-video3 text-warning"></i>
+                        <i class="bi bi-graph-up-arrow text-success"></i>
                     </div>
                 </div>
             </div>
@@ -57,26 +57,52 @@
                 <div class="card p-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1">Total Kelas</h6>
+                            <h6 class="mb-1">Tabungan keluar</h6>
                             <h3 class="mb-0"></h3>
                         </div>
-                        <i class="bi bi-door-open text-danger"></i>
+                        <i class="bi bi-graph-down-arrow text-danger"></i>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="row mt-2 g-4 justify-content-center">
+            <div class="col-md-3 col-6 stats-card">
+                <a href="{{ route('kepala_sekolah.absensi.index') }}" class="text-decoration-none">
+                    <div class="card p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Absensi</h6>
+                            </div>
+                            <i class="bi bi-building-check"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
+            <div class="col-md-3 col-6 stats-card">
+                <a href="" class="text-decoration-none">
+                    <div class="card p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Ijin</h6>
+                            </div>
+                            <i class="bi bi-building-exclamation"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
         <!-- Recent Users Table -->
         <div class="card p-3 mt-4">
-            <h5>User Terbaru</h5>
+            <h5>Log Absen Hari ini</h5>
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
                             <th>Nama</th>
-                            <th>Email</th>
                             <th>Role</th>
-                            <th>Tanggal Bergabung</th>
+                            <th>Jam Masuk</th>
+                            <th>Jam Keluar</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,6 +111,7 @@
                             <td></td>
                             <td></td>
                             <td></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
