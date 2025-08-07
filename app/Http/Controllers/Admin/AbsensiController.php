@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\AttendanceLocation;
 use Illuminate\Http\Request;
