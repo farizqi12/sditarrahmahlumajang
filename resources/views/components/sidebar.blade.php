@@ -117,10 +117,7 @@
             <a href="{{ route('kepala_sekolah.absensi.index') }}" class="{{ Request::is('kepala_sekolah/absensi*') ? 'active' : '' }}">
                 <i class="bi bi-calendar-check me-2"></i> Absensi
             </a>
-            <a href="{{ route('kepala_sekolah.laporan_akademik.index') }}" class="{{ Request::is('kepala_sekolah/laporan-akademik*') ? 'active' : '' }}">
-                <i class="bi bi-graph-up me-2"></i> Laporan Akademik
-            </a>
-            <a href="" class="{{ Request::is('kepala_sekolah/laporan-keuangan*') ? 'active' : '' }}">
+            <a href="{{ route('kepala_sekolah.laporan_keuangan.index') }}" class="{{ Request::is('kepala_sekolah/laporan-keuangan*') ? 'active' : '' }}">
                 <i class="bi bi-cash-coin me-2"></i> Laporan Keuangan
             </a>
         @endif
