@@ -76,7 +76,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:kepala_sekolah'])->prefix('kepala_sekolah')->name('kepala_sekolah.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('/absensi', AbsensiControllerKepsek::class)->names('absensi');
-    Route::get('/laporan-akademik', [LaporanAkademikController::class, 'index'])->name('laporan_akademik');
+    Route::post('/absensi/checkin', [AbsensiControllerKepsek::class, 'checkIn'])->name('absensi.checkin');
+    Route::post('/absensi/checkout', [AbsensiControllerKepsek::class, 'checkOut'])->name('absensi.checkout');
+    Route::resource('/laporan-akademik', LaporanAkademikController::class)->names('laporan_akademik');
 }); 
 
 // Guru Routes
