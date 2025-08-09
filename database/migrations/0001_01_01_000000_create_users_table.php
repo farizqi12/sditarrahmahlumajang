@@ -23,7 +23,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->rememberToken();
             $table->foreignId('role_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
@@ -59,7 +61,7 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('location_id')->constrained('attendance_locations')->onDelete('cascade');
+            $table->foreignId('location_id')->nullable()->constrained('attendance_locations')->onDelete('cascade');
             $table->date('date');
             $table->time('check_in')->nullable();
             $table->time('check_out')->nullable();
