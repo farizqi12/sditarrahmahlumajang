@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WalletController;
 use App\Http\Controllers\Kepala_Sekolah\AbsensiControllerKepsek;
-use App\Http\Controllers\Kepala_Sekolah\LaporanAkademikController;
+use App\Http\Controllers\Kepala_Sekolah\LaporanKeuanganController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -78,7 +78,7 @@ Route::middleware(['auth', 'role:kepala_sekolah'])->prefix('kepala_sekolah')->na
     Route::resource('/absensi', AbsensiControllerKepsek::class)->names('absensi');
     Route::post('/absensi/checkin', [AbsensiControllerKepsek::class, 'checkIn'])->name('absensi.checkin');
     Route::post('/absensi/checkout', [AbsensiControllerKepsek::class, 'checkOut'])->name('absensi.checkout');
-    Route::resource('/laporan-akademik', LaporanAkademikController::class)->names('laporan_akademik');
+    Route::resource('/laporan-keuangan', LaporanKeuanganController::class)->names('laporan_keuangan');
 }); 
 
 // Guru Routes
