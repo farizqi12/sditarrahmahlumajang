@@ -153,7 +153,7 @@
             <a href="{{ route('staff_tu.absensi.index') }}" class="{{ Request::is('staff_tu/absensi*') ? 'active' : '' }}">
                 <i class="bi bi-calendar-check me-2"></i> Absensi
             </a>
-            <a href="#">
+            <a href="{{ route('staff_tu.siswa.index') }}" class="{{ Request::is('staff_tu/siswa*') ? 'active' : '' }}">
                 <i class="bi bi-person-rolodex me-2"></i> Data Siswa
             </a>
         @endif

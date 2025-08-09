@@ -11,6 +11,9 @@ use App\Http\Controllers\Admin\WalletController;
 use App\Http\Controllers\Kepala_Sekolah\AbsensiControllerKepsek;
 use App\Http\Controllers\Kepala_Sekolah\LaporanAkademikController;
 use App\Http\Controllers\Kepala_Sekolah\LaporanKeuanganController;
+use App\Http\Controllers\Staff_TU\AbsensiController as StaffTUAbsensiController;
+use App\Http\Controllers\Staff_TU\DashboardController as StaffTUDashboardController;
+use App\Http\Controllers\Staff_TU\SiswaController as StaffTUSiswaController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -94,5 +97,9 @@ Route::middleware(['auth', 'role:murid'])->prefix('murid')->name('murid.')->grou
 
 // Staff TU Routes
 Route::middleware(['auth', 'role:staff_tu'])->prefix('staff_tu')->name('staff_tu.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [StaffTUDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/absensi', [StaffTUAbsensiController::class, 'index'])->name('absensi.index');
+    Route::post('/absensi/checkin', [StaffTUAbsensiController::class, 'checkIn'])->name('absensi.checkin');
+    Route::post('/absensi/checkout', [StaffTUAbsensiController::class, 'checkOut'])->name('absensi.checkout');
+    Route::get('/siswa', [StaffTUSiswaController::class, 'index'])->name('siswa.index');
 });
