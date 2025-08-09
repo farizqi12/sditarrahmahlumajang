@@ -38,6 +38,9 @@ class AbsensiController extends Controller
 
     public function checkIn(Request $request)
     {
+        if (Carbon::today()->isWeekend()) {
+            return response()->json(['success' => false, 'message' => 'Absensi tidak dapat dilakukan pada hari Sabtu atau Minggu.'], 400);
+        }
         $request->validate([
             'latitude'  => 'required|numeric',
             'longitude' => 'required|numeric',

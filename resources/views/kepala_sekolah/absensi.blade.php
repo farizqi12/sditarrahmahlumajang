@@ -14,7 +14,7 @@ use Error;
         src="https://maps.googleapis.com/maps/api/js?key={{ config('maps.google_maps_api_key') }}&libraries=places&callback=initMap"
         async defer></script>
 
-</head>
+</head> 
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <x-sidebar></x-sidebar>
