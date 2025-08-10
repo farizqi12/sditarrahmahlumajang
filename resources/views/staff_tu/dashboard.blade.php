@@ -26,35 +26,24 @@
                 <div class="col-md-4">
                     <div class="card text-center p-3 shadow-sm">
                         <h6 class="text-muted">Total Siswa</h6>
-                        <h3>350</h3>
+                        <h3>{{ $totalStudents }}</h3>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card text-center p-3 shadow-sm">
                         <h6 class="text-muted">Transaksi Tertunda</h6>
-                        <h3>15</h3>
+                        <h3>{{ $pendingTransactions }}</h3>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card text-center p-3 shadow-sm">
                         <h6 class="text-muted">Pemasukan Hari Ini</h6>
-                        <h3>Rp 1.500.000</h3>
+                        <h3>Rp {{ number_format($todaysIncome, 0, ',', '.') }}</h3>
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="card p-4 mt-4">
-                <h5 class="card-title mb-3">Aksi Cepat</h5>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <a href="#" class="btn btn-primary w-100 p-3">Manajemen Pembayaran SPP</a>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <a href="#" class="btn btn-info w-100 p-3">Lihat Data Siswa</a>
-                    </div>
-                </div>
-            </div>
+            
 
             <!-- Recent Transactions Table -->
             <div class="card p-3 mt-4">
@@ -72,46 +61,34 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>#12345</td>
-                                <td>Ahmad Abdullah</td>
-                                <td><span class="badge bg-success">Credit</span></td>
-                                <td>Rp 250.000</td>
-                                <td><span class="badge bg-success">Completed</span></td>
-                                <td>07 Agu 2025 10:30</td>
-                            </tr>
-                            <tr>
-                                <td>#12346</td>
-                                <td>Budi Santoso</td>
-                                <td><span class="badge bg-success">Credit</span></td>
-                                <td>Rp 250.000</td>
-                                <td><span class="badge bg-warning">Pending</span></td>
-                                <td>07 Agu 2025 09:15</td>
-                            </tr>
-                            <tr>
-                                <td>#12347</td>
-                                <td>Citra Lestari</td>
-                                <td><span class="badge bg-danger">Debit</span></td>
-                                <td>Rp 50.000</td>
-                                <td><span class="badge bg-success">Completed</span></td>
-                                <td>06 Agu 2025 14:00</td>
-                            </tr>
-                            <tr>
-                                <td>#12348</td>
-                                <td>Dewi Anggraini</td>
-                                <td><span class="badge bg-success">Credit</span></td>
-                                <td>Rp 250.000</td>
-                                <td><span class="badge bg-danger">Rejected</span></td>
-                                <td>06 Agu 2025 11:45</td>
-                            </tr>
-                            <tr>
-                                <td>#12349</td>
-                                <td>Eko Prasetyo</td>
-                                <td><span class="badge bg-success">Credit</span></td>
-                                <td>Rp 250.000</td>
-                                <td><span class="badge bg-success">Completed</span></td>
-                                <td>05 Agu 2025 16:20</td>
-                            </tr>
+                            @forelse ($recentTransactions as $transaction)
+                                <tr>
+                                    <td>#{{ $transaction->id }}</td>
+                                    <td>{{ $transaction->wallet->user->name }}</td>
+                                    <td>
+                                        @if ($transaction->type == 'credit')
+                                            <span class="badge bg-success">Credit</span>
+                                        @else
+                                            <span class="badge bg-danger">Debit</span>
+                                        @endif
+                                    </td>
+                                    <td>Rp {{ number_format($transaction->amount, 0, ',', '.') }}</td>
+                                    <td>
+                                        @if ($transaction->status == 'completed')
+                                            <span class="badge bg-success">Completed</span>
+                                        @elseif ($transaction->status == 'pending')
+                                            <span class="badge bg-warning">Pending</span>
+                                        @else
+                                            <span class="badge bg-danger">Rejected</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $transaction->created_at->format('d Agu Y H:i') }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center">Tidak ada transaksi terbaru.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

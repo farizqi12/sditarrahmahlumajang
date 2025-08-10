@@ -70,8 +70,7 @@ class DashboardController extends Controller
                 return view('guru.dashboard');
             case 'murid':
                 return view('murid.dashboard');
-            case 'staff_tu':
-                return view('staff_tu.dashboard');
+            
         }
     }
 }
