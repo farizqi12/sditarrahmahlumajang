@@ -62,6 +62,7 @@
                                 <div id="distanceStatus" class="text-center my-3 small p-2 rounded"></div>
 
                                 <div class="d-grid gap-2">
+                                    <button id="scanQrBtn" class="btn btn-success">Scan QR Code</button>
                                     @if (!$attendanceToday || !$attendanceToday->check_in)
                                         <button id="checkInBtn" class="btn btn-primary" disabled>Check-In</button>
                                     @elseif (!$attendanceToday->check_out)
@@ -72,6 +73,7 @@
                         </div>
                         <div id="map" style="height: 400px; width: 100%; border-radius: .5rem;" class="shadow-sm">
                         </div>
+                        <div id="qr-reader" style="width: 100%;"></div>
                     </div>
 
                     <!-- Kolom Kanan: Riwayat Absensi -->
@@ -82,6 +84,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Tanggal</th>
+                                        <th>Lokasi</th>
                                         <th>Check-In</th>
                                         <th>Check-Out</th>
                                         <th>Status</th>
@@ -91,6 +94,7 @@
                                     @forelse ($attendanceHistory as $att)
                                         <tr>
                                             <td>{{ $att->date->format('d M Y') }}</td>
+                                            <td>{{ $att->location->name ?? 'N/A' }}</td>
                                             <td>{{ $att->check_in ? \Carbon\Carbon::parse($att->check_in)->format('H:i:s') : '-' }}
                                             </td>
                                             <td>{{ $att->check_out ? \Carbon\Carbon::parse($att->check_out)->format('H:i:s') : '-' }}
@@ -114,6 +118,7 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/gh/somanchiu/Keyless-Google-Maps-API@v7.1/mapsJavaScriptAPI.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let map, userMarker, locationMarker, locationCircle;
@@ -303,6 +308,66 @@
             locationSelect.addEventListener('change', updateDistance);
             if (checkInBtn) checkInBtn.addEventListener('click', () => performCheck('in'));
             if (checkOutBtn) checkOutBtn.addEventListener('click', () => performCheck('out'));
+
+            const scanQrBtn = document.getElementById('scanQrBtn');
+            const qrReader = new Html5Qrcode("qr-reader");
+
+            scanQrBtn.addEventListener('click', () => {
+                qrReader.start(
+                    { facingMode: "environment" }, // or "user"
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 }
+                    },
+                    (decodedText, decodedResult) => {
+                        // do something when code is read
+                        qrReader.stop();
+                        performScan(decodedText);
+                    },
+                    (errorMessage) => {
+                        // parse error, ignore it.
+                    })
+                    .catch((err) => {
+                        // Start failed, handle it.
+                        console.log(err);
+                    });
+            });
+
+            async function performScan(locationId) {
+                if (!userCoords) {
+                    alert('Silakan izinkan akses GPS.');
+                    return;
+                }
+
+                const url = '{{ route('staff_tu.absensi.scan') }}';
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            location_id: locationId,
+                            latitude: userCoords.latitude,
+                            longitude: userCoords.longitude
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert(result.message);
+                        window.location.reload();
+                    } else {
+                        throw new Error(result.message || 'Terjadi kesalahan');
+                    }
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
 
             // Get initial location on page load
             getLocation();

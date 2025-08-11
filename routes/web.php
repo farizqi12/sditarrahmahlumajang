@@ -74,6 +74,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/absensi/checkout', [AbsensiController::class, 'checkOut'])->name('absensi.checkout');
     Route::post('absensi/locations', [AbsensiController::class, 'storeLocation'])->name('absensi.locations.store');
     Route::delete('absensi/locations/{location}', [AbsensiController::class, 'destroyLocation'])->name('absensi.locations.destroy');
+    Route::get('absensi/locations/{location}/qrcode', [AbsensiController::class, 'showQrCode'])->name('absensi.locations.qrcode');
 });
 
 // Kepala Sekolah Routes
@@ -82,6 +83,7 @@ Route::middleware(['auth', 'role:kepala_sekolah'])->prefix('kepala_sekolah')->na
     Route::resource('/absensi', AbsensiControllerKepsek::class)->names('absensi');
     Route::post('/absensi/checkin', [AbsensiControllerKepsek::class, 'checkIn'])->name('absensi.checkin');
     Route::post('/absensi/checkout', [AbsensiControllerKepsek::class, 'checkOut'])->name('absensi.checkout');
+    Route::post('/absensi/scan', [AbsensiControllerKepsek::class, 'scan'])->name('absensi.scan');
     Route::get('/laporan-keuangan', [LaporanKeuanganController::class, 'index'])->name('laporan_keuangan');
     Route::get('/laporan-keuangan/data', [LaporanKeuanganController::class, 'getFinancialData'])->name('laporan_keuangan.data');
     Route::resource('laporan-keuangan', LaporanKeuanganController::class)->names('laporan_keuangan');
@@ -103,5 +105,6 @@ Route::middleware(['auth', 'role:staff_tu'])->prefix('staff_tu')->name('staff_tu
     Route::get('/absensi', [StaffTUAbsensiController::class, 'index'])->name('absensi.index');
     Route::post('/absensi/checkin', [StaffTUAbsensiController::class, 'checkIn'])->name('absensi.checkin');
     Route::post('/absensi/checkout', [StaffTUAbsensiController::class, 'checkOut'])->name('absensi.checkout');
+    Route::post('/absensi/scan', [StaffTUAbsensiController::class, 'scan'])->name('absensi.scan');
     Route::get('/siswa', [StaffTUSiswaController::class, 'index'])->name('siswa.index');
 });

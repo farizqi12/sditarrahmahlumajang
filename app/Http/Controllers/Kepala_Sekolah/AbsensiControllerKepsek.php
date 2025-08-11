@@ -26,6 +26,7 @@ class AbsensiControllerKepsek extends Controller
 
         // Get attendance history for the current user
         $attendanceHistory = Attendance::where('user_id', $user->id)
+            ->with('location')
             ->latest('date')
             ->paginate(10);
 
@@ -147,5 +148,74 @@ class AbsensiControllerKepsek extends Controller
         $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
             cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
         return $angle * $earthRadius;
+    }
+
+    public function scan(Request $request)
+    {
+        if (Carbon::today()->isWeekend()) {
+            return response()->json(['success' => false, 'message' => 'Absensi tidak dapat dilakukan pada hari Sabtu atau Minggu.'], 400);
+        }
+
+        $request->validate([
+            'location_id' => 'required|exists:attendance_locations,id',
+            'latitude'    => 'required|numeric',
+            'longitude'   => 'required|numeric',
+        ]);
+
+        $user = Auth::user();
+        $location = AttendanceLocation::find($request->location_id);
+
+        // Check if the user's role is allowed to access this location
+        if (!$user->role->attendanceLocations->contains($location)) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak diizinkan untuk absen di lokasi ini.'], 403);
+        }
+
+        // Server-side distance validation
+        $distance = $this->haversineGreatCircleDistance(
+            $request->latitude,
+            $request->longitude,
+            $location->latitude,
+            $location->longitude
+        );
+
+        if ($distance > $location->radius_meter) {
+            return response()->json(['success' => false, 'message' => 'Anda berada di luar jangkauan lokasi.'], 400);
+        }
+
+        $today = Carbon::today();
+        $currentTime = Carbon::now()->format('H:i:s');
+
+        // Check if user already checked in today
+        $existingAttendance = Attendance::where('user_id', $user->id)
+            ->whereDate('date', $today)
+            ->first();
+
+        if ($existingAttendance) {
+            // If an attendance record exists and it's a check-in (check_out is null)
+            if ($existingAttendance->check_in && !$existingAttendance->check_out) {
+                // If the scanned location is different from the check-in location, prevent check-in
+                if ($existingAttendance->location_id != $location->id) {
+                    return response()->json(['success' => false, 'message' => 'Anda sudah check-in di lokasi lain hari ini.'], 400);
+                }
+                // Otherwise, it's a check-out
+                $existingAttendance->update([
+                    'check_out' => $currentTime,
+                ]);
+                return response()->json(['success' => true, 'message' => 'Check-out berhasil!']);
+            } else if ($existingAttendance->check_in && $existingAttendance->check_out) {
+                // Already checked in and out
+                return response()->json(['success' => false, 'message' => 'Anda sudah melakukan check-in dan check-out hari ini.'], 409);
+            }
+        } else {
+            // No existing attendance, perform check-in
+            Attendance::create([
+                'user_id'     => $user->id,
+                'location_id' => $location->id,
+                'date'        => $today,
+                'check_in'    => $currentTime,
+                'status'      => 'hadir',
+            ]);
+            return response()->json(['success' => true, 'message' => 'Check-in berhasil!']);
+        }
     }
 }
