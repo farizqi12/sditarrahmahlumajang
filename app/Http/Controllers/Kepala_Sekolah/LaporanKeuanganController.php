@@ -10,6 +10,12 @@ use Carbon\Carbon;
 
 class LaporanKeuanganController extends Controller
 {
+    public function __construct()
+    {
+        // Rate limiter untuk laporan keuangan
+        $this->middleware('throttle:30,1')->only(['index', 'getFinancialData']); // 30 request per menit untuk generate laporan
+    }
+
     public function index(Request $request)
     {
         $period = $request->input('period', 'harian');

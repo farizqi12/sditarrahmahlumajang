@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 
 class ReportsController extends Controller
 {
+    public function __construct()
+    {
+        // Rate limiter untuk laporan
+        $this->middleware('throttle:30,1')->only(['index', 'showClassReport']); // 30 request per menit untuk generate laporan
+    }
+
     /**
      * Display the main reports page.
      * It shows a list of classes and the report for a selected class.

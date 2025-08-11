@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 
 class SiswaController extends Controller
 {
+    public function __construct()
+    {
+        // Rate limiter untuk manajemen siswa
+        $this->middleware('throttle:60,1')->only(['index']); // 60 request per menit untuk view
+    }
+
     public function index()
     {
         // Fetch users with the 'murid' role, along with their student details.

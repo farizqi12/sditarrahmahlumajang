@@ -12,6 +12,13 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        // Rate limiter untuk manajemen user
+        $this->middleware('throttle:30,1')->only(['store', 'update', 'destroy']); // 30 request per menit untuk CRUD
+        $this->middleware('throttle:60,1')->only(['index']); // 60 request per menit untuk view
+    }
+
     public function index(Request $request)
     {
         $query = User::with(['role', 'student', 'teacher']);

@@ -7,6 +7,13 @@ use Illuminate\Support\Facades\Auth;
 
 class Login extends Controller
 {
+    public function __construct()
+    {
+        // Rate limiter untuk login - lebih ketat untuk keamanan
+        $this->middleware('throttle.advanced:login')->only(['login']); // 5 request per menit untuk login
+        $this->middleware('throttle.advanced:logout')->only(['logout']); // 30 request per menit untuk logout
+    }
+
     public function showLoginForm()
     {
         return view('login');
