@@ -17,6 +17,14 @@ use Dompdf\Options;
 
 class AbsensiController extends Controller
 {
+    public function __construct()
+    {
+        // Rate limiter untuk method yang sering diakses
+        $this->middleware('throttle:30,1')->only(['checkIn', 'checkOut']); // 30 request per menit
+        $this->middleware('throttle:60,1')->only(['index', 'storeLocation', 'destroyLocation']); // 60 request per menit
+        $this->middleware('throttle:10,1')->only(['showQrCode']); // 10 request per menit untuk generate QR
+    }
+
     public function index()
     {
         $user = Auth::user();

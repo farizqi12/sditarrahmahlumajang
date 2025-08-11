@@ -11,6 +11,14 @@ use Carbon\Carbon;
 
 class AbsensiControllerKepsek extends Controller
 {
+    public function __construct()
+    {
+        // Rate limiter untuk absensi kepala sekolah
+        $this->middleware('throttle:30,1')->only(['checkIn', 'checkOut']); // 30 request per menit
+        $this->middleware('throttle:60,1')->only(['index']); // 60 request per menit untuk view
+        $this->middleware('throttle:20,1')->only(['scan']); // 20 request per menit untuk scan QR
+    }
+
     public function index()
     {
         $user = Auth::user();

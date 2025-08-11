@@ -11,6 +11,14 @@ use App\Models\Student;
 use App\Models\Enrollment;
 class CoursesController extends Controller
 {
+    public function __construct()
+    {
+        // Rate limiter untuk manajemen kursus
+        $this->middleware('throttle:30,1')->only(['store', 'update', 'destroy', 'toggleStatus']); // 30 request per menit untuk CRUD
+        $this->middleware('throttle:20,1')->only(['addStudents', 'removeStudent']); // 20 request per menit untuk manajemen siswa
+        $this->middleware('throttle:60,1')->only(['index', 'manage']); // 60 request per menit untuk view
+    }
+
     public function index(Request $request)
     {
         $query = ClassModel::with(['teacher.user', 'academicYear']);

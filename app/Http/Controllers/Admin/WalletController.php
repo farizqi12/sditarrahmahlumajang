@@ -12,6 +12,13 @@ use Illuminate\Support\Facades\DB;
 
 class WalletController extends Controller
 {
+    public function __construct()
+    {
+        // Rate limiter untuk transaksi keuangan
+        $this->middleware('throttle:20,1')->only(['store', 'acceptTransaction', 'rejectTransaction']); // 20 request per menit untuk transaksi
+        $this->middleware('throttle:60,1')->only(['index', 'show', 'pending']); // 60 request per menit untuk view
+    }
+
     /**
      * Menampilkan daftar semua dompet pengguna (murid dan guru).
      */

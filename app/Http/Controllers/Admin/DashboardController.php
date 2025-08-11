@@ -16,6 +16,12 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    public function __construct()
+    {
+        // Rate limiter untuk dashboard
+        $this->middleware('throttle:60,1')->only(['index']); // 60 request per menit untuk dashboard
+    }
+
     public function index()
     {
         $user = Auth::user();
