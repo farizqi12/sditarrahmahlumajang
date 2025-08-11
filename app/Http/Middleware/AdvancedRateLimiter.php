@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\RateLimiter as RateLimiterFacade;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -24,11 +24,11 @@ class AdvancedRateLimiter
         
         $key = $this->resolveRequestSignature($request, $limitType);
 
-        if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
+        if (RateLimiterFacade::tooManyAttempts($key, $maxAttempts)) {
             return $this->buildResponse($key, $maxAttempts, $limitType);
         }
 
-        RateLimiter::hit($key, $decayMinutes * 60);
+        RateLimiterFacade::hit($key, $decayMinutes * 60);
 
         $response = $next($request);
 
@@ -56,7 +56,7 @@ class AdvancedRateLimiter
      */
     protected function buildResponse(string $key, int $maxAttempts, string $limitType): Response
     {
-        $retryAfter = RateLimiter::availableIn($key);
+        $retryAfter = RateLimiterFacade::availableIn($key);
         $minutes = ceil($retryAfter / 60);
         
         $message = config("rate_limiter.messages.{$limitType}", config('rate_limiter.messages.default'));
@@ -91,6 +91,6 @@ class AdvancedRateLimiter
      */
     protected function calculateRemainingAttempts(string $key, int $maxAttempts): int
     {
-        return $maxAttempts - RateLimiter::attempts($key) + 1;
+        return $maxAttempts - RateLimiterFacade::attempts($key) + 1;
     }
 }
