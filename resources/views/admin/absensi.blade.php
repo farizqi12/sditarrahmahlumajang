@@ -68,6 +68,7 @@
                             <th>Nama Lokasi</th>
                             <th>Radius</th>
                             <th>Peran</th>
+                            <th>QR Code</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -82,6 +83,11 @@
                                     @endforeach
                                 </td>
                                 <td>
+                                    @if ($location->qrcode_path)
+                                        <a href="{{ route('admin.absensi.locations.qrcode', $location) }}" class="btn btn-primary btn-sm" target="_blank">Unduh QR Code (PDF)</a>
+                                    @endif
+                                </td>
+                                <td>
                                     <form action="{{ route('admin.absensi.locations.destroy', $location) }}"
                                         method="POST"
                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus lokasi ini?');">
@@ -93,7 +99,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="text-center">Belum ada lokasi yang ditambahkan.</td>
+                                <td colspan="5" class="text-center">Belum ada lokasi yang ditambahkan.</td>
                             </tr>
                         @endforelse
                     </tbody>

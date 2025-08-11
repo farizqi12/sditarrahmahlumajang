@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Role;
+use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class AbsensiController extends Controller
 {
@@ -137,6 +141,11 @@ class AbsensiController extends Controller
             'radius_meter' => $request->radius,
         ]);
 
+        $qrCodePath = 'qrcodes/' . $location->id . '.png';
+        QrCode::generate($location->id, storage_path('app/public/' . $qrCodePath));
+
+        $location->update(['qrcode_path' => $qrCodePath]);
+
         $location->roles()->sync($request->roles);
 
         return redirect()->route('admin.absensi.index')->with('success', 'Lokasi berhasil ditambahkan.');
@@ -146,5 +155,45 @@ class AbsensiController extends Controller
     {
         $location->delete();
         return redirect()->route('admin.absensi.index')->with('success', 'Lokasi berhasil dihapus.');
+    }
+
+    public function showQrCode(AttendanceLocation $location)
+    {
+        $qrCodePath = storage_path('app/public/' . $location->qrcode_path);
+
+        if (!file_exists($qrCodePath)) {
+            abort(404);
+        }
+
+        $qrCodeImage = base64_encode(file_get_contents($qrCodePath));
+
+        $html = '
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>QR Code</title>
+                <style>
+                    body { text-align: center; }
+                    img { width: 300px; height: 300px; margin-top: 50px; }
+                    h1 { font-family: sans-serif; }
+                </style>
+            </head>
+            <body>
+                <h1>QR Code for ' . $location->name . '</h1>
+                <img src="data:image/png;base64,' . $qrCodeImage . '">
+            </body>
+            </html>
+        ';
+
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return $dompdf->stream('qrcode_' . $location->id . '.pdf');
     }
 }

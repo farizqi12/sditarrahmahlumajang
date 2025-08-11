@@ -14,6 +14,7 @@ class AttendanceLocation extends Model
         'latitude',
         'longitude',
         'radius_meter',
+        'qrcode_path',
     ];
 
     public function attendances()

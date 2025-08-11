@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('classes', function (Blueprint $table) {
-            $table->softDeletes();
+        Schema::table('attendance_locations', function (Blueprint $table) {
+            $table->string('qrcode_path')->nullable()->after('radius_meter');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('classes', function (Blueprint $table) {
-            $table->dropSoftDeletes();
+        Schema::table('attendance_locations', function (Blueprint $table) {
+            $table->dropColumn('qrcode_path');
         });
     }
 };
