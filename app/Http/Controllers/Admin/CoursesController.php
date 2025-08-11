@@ -86,28 +86,29 @@ class CoursesController extends Controller
         return view('admin.courses.manage', compact('course', 'students'));
     }
 
-    public function addStudent(Request $request, ClassModel $course)
+    public function addStudents(Request $request, ClassModel $course)
     {
         $request->validate([
-            'student_id' => 'required|exists:students,id',
+            'student_ids'   => 'required|array',
+            'student_ids.*' => 'exists:students,id',
         ]);
 
-        // Check if the student is already enrolled
-        $isEnrolled = Enrollment::where('class_id', $course->id)
-            ->where('student_id', $request->student_id)
-            ->exists();
+        foreach ($request->student_ids as $student_id) {
+            // Check if the student is already enrolled
+            $isEnrolled = Enrollment::where('class_id', $course->id)
+                ->where('student_id', $student_id)
+                ->exists();
 
-        if ($isEnrolled) {
-            return redirect()->back()->with('error', 'Siswa sudah terdaftar di kelas ini.');
+            if (!$isEnrolled) {
+                Enrollment::create([
+                    'class_id'         => $course->id,
+                    'student_id'       => $student_id,
+                    'academic_year_id' => $course->academic_year_id,
+                    'enrollment_date'  => now(),
+                    'status'           => 'active',
+                ]);
+            }
         }
-
-        Enrollment::create([
-            'class_id'         => $course->id,
-            'student_id'       => $request->student_id,
-            'academic_year_id' => $course->academic_year_id,
-            'enrollment_date'  => now(),
-            'status'           => 'active',
-        ]);
 
         return redirect()->back()->with('success', 'Siswa berhasil ditambahkan ke kelas.');
     }

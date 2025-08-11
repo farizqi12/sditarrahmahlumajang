@@ -7,14 +7,9 @@
     <title>Admin Absensi - E-Learning</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-        integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD"
-        crossorigin="anonymous"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous" />
     <link rel="stylesheet" href="{{ asset('css/admin/absensi.css') }}">
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ config('maps.google_maps_api_key') }}&libraries=places&callback=initMap" async defer></script>
 </head>
 
 <body>
@@ -44,11 +39,13 @@
                         </div>
                         <div class="mb-3">
                             <label for="longitude" class="form-label">Longitude</label>
-                            <input type="text" class="form-control" id="longitude" name="longitude" readonly required>
+                            <input type="text" class="form-control" id="longitude" name="longitude" readonly
+                                required>
                         </div>
                         <div class="mb-3">
                             <label for="radius" class="form-label">Radius (meter)</label>
-                            <input type="number" class="form-control" id="radius" name="radius" value="100" required>
+                            <input type="number" class="form-control" id="radius" name="radius" value="100"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label for="roles" class="form-label">Peran yang Diizinkan</label>
@@ -76,26 +73,28 @@
                     </thead>
                     <tbody>
                         @forelse ($locations as $location)
-                        <tr>
-                            <td>{{ $location->name }}</td>
-                            <td>{{ $location->radius_meter }} meter</td>
-                            <td>
-                                @foreach ($location->roles as $role)
-                                    <span class="badge bg-info">{{ $role->name }}</span>
-                                @endforeach
-                            </td>
-                            <td>
-                                <form action="{{ route('admin.absensi.locations.destroy', $location) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus lokasi ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                </form>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td>{{ $location->name }}</td>
+                                <td>{{ $location->radius_meter }} meter</td>
+                                <td>
+                                    @foreach ($location->roles as $role)
+                                        <span class="badge bg-info">{{ $role->name }}</span>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    <form action="{{ route('admin.absensi.locations.destroy', $location) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus lokasi ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                    </form>
+                                </td>
+                            </tr>
                         @empty
-                        <tr>
-                            <td colspan="3" class="text-center">Belum ada lokasi yang ditambahkan.</td>
-                        </tr>
+                            <tr>
+                                <td colspan="3" class="text-center">Belum ada lokasi yang ditambahkan.</td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -114,30 +113,34 @@
                     </thead>
                     <tbody>
                         @forelse ($attendanceHistory as $attendance)
-                        <tr>
-                            <td>{{ $attendance->user->name }}</td>
-                            <td>{{ $attendance->date->format('d M Y') }}</td>
-                            <td><span class="badge bg-success">{{ ucfirst($attendance->status) }}</span></td>
-                            <td>{{ $attendance->check_in }} - {{ $attendance->check_out ?? 'Belum Checkout' }}</td>
-                        </tr>
+                            <tr>
+                                <td>{{ $attendance->user->name }}</td>
+                                <td>{{ $attendance->date->format('d M Y') }}</td>
+                                <td><span class="badge bg-success">{{ ucfirst($attendance->status) }}</span></td>
+                                <td>{{ $attendance->check_in }} - {{ $attendance->check_out ?? 'Belum Checkout' }}
+                                </td>
+                            </tr>
                         @empty
-                        <tr>
-                            <td colspan="4" class="text-center">Tidak ada data absensi.</td>
-                        </tr>
+                            <tr>
+                                <td colspan="4" class="text-center">Tidak ada data absensi.</td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
+    {{-- <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ config('maps.google_maps_api_key') }}&libraries=places&callback=initMap"
+        async defer></script> --}}
+    <script src="https://cdn.jsdelivr.net/gh/somanchiu/Keyless-Google-Maps-API@v7.1/mapsJavaScriptAPI.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
     <script>
         let map, marker, circle;
 
-        new TomSelect("#roles",{
+        new TomSelect("#roles", {
             plugins: ['remove_button'],
             create: false,
             sortField: {
@@ -147,7 +150,10 @@
         });
 
         function initMap() {
-            const initialPosition = { lat: -8.1689, lng: 113.7169 }; // Default Lumajang
+            const initialPosition = {
+                lat: -8.1689,
+                lng: 113.7169
+            }; // Default Lumajang
 
             map = new google.maps.Map(document.getElementById('map'), {
                 center: initialPosition,
