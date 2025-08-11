@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\DB;
 
 class AcademicYearController extends Controller
 {
+    public function __construct()
+    {
+        // Rate limiter untuk manajemen tahun ajaran
+        $this->middleware('throttle.advanced:academic_year')->only(['store']); // 10 request per menit untuk operasi penting
+    }
+
     public function store(Request $request)
     {
         $request->validate([
