@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/admin/courses.css') }}">
 </head>
 
@@ -29,11 +30,10 @@
                 {{-- Kolom untuk menambahkan siswa --}}
                 <div class="col-md-4">
                     <h6>Tambahkan Siswa</h6>
-                    <form action="{{ route('admin.courses.addStudent', $course->id) }}" method="POST">
+                    <form action="{{ route('admin.courses.addStudents', $course->id) }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <select name="student_id" class="form-select">
-                                <option value="">-- Pilih Siswa --</option>
+                            <select name="student_ids[]" class="form-select" multiple>
                                 @foreach ($students as $student)
                                     <option value="{{ $student->id }}">{{ $student->user->name }} ({{ $student->nis }})</option>
                                 @endforeach
@@ -86,6 +86,17 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <script>
+        new TomSelect('select[multiple]', {
+            plugins: ['remove_button'],
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            }
+        });
+    </script>
 </body>
 
 </html>

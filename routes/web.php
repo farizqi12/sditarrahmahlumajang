@@ -58,7 +58,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('courses', CoursesController::class);
     Route::patch('courses/{course}/toggle-status', [CoursesController::class, 'toggleStatus'])->name('courses.toggleStatus');
     Route::get('courses/{course}/manage', [CoursesController::class, 'manage'])->name('courses.manage');
-    Route::post('courses/{course}/add-student', [CoursesController::class, 'addStudent'])->name('courses.addStudent');
+    Route::post('courses/{course}/add-students', [CoursesController::class, 'addStudents'])->name('courses.addStudents');
     Route::delete('courses/{course}/remove-student/{student}', [CoursesController::class, 'removeStudent'])->name('courses.removeStudent');
     Route::resource('users', UserController::class)->names('users');
     Route::get('reports', [ReportsController::class, 'index'])->name('reports');
