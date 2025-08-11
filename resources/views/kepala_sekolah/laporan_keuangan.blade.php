@@ -161,14 +161,13 @@
 
             <div class="d-flex justify-content-end mb-3">
                 <select id="filterPeriode" class="form-select w-auto">
-                    <option value="harian">Harian</option>
-                    <option value="bulanan">Bulanan</option>
-                    <option value="tahunan">Tahunan</option>
+                    <option value="harian" {{ $period == 'harian' ? 'selected' : '' }}>Harian</option>
+                    <option value="bulanan" {{ $period == 'bulanan' ? 'selected' : '' }}>Bulanan</option>
+                    <option value="tahunan" {{ $period == 'tahunan' ? 'selected' : '' }}>Tahunan</option>
                 </select>
             </div>
 
             <div class="mb-4">
-                <!-- Hilangkan height attribute supaya Chart.js bisa mengatur ukuran canvas sendiri -->
                 <canvas id="grafikKeuangan"></canvas>
             </div>
 
@@ -195,11 +194,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>2025-08-10</td>
-                                    <td>Budi Santoso</td>
-                                    <td>Rp 50.000</td>
-                                </tr>
+                                @forelse ($tabunganMasuk as $transaksi)
+                                    <tr>
+                                        <td>{{ $transaksi->created_at->format('Y-m-d') }}</td>
+                                        <td>{{ $transaksi->wallet->user->name ?? 'N/A' }}</td>
+                                        <td>Rp {{ number_format($transaksi->amount, 0, ',', '.') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="text-center">Tidak ada data tabungan masuk.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -216,11 +221,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>2025-08-09</td>
-                                    <td>Siti Aminah</td>
-                                    <td>Rp 30.000</td>
-                                </tr>
+                                @forelse ($tabunganKeluar as $transaksi)
+                                    <tr>
+                                        <td>{{ $transaksi->created_at->format('Y-m-d') }}</td>
+                                        <td>{{ $transaksi->wallet->user->name ?? 'N/A' }}</td>
+                                        <td>Rp {{ number_format($transaksi->amount, 0, ',', '.') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="text-center">Tidak ada data tabungan keluar.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -229,145 +240,101 @@
         </div>
     </div>
 
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const ctx = document.getElementById('grafikKeuangan').getContext('2d');
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('grafikKeuangan').getContext('2d');
+            const initialChartData = @json($chartData);
 
-        // Data default (Tabungan Masuk)
-        const dataTabunganMasuk = {
-            labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'],
-            datasets: [{
-                label: 'Transaksi Masuk',
-                data: [50000, 30000, 40000, 20000, 60000],
-                backgroundColor: '#4e73df'
-            }]
-        };
-
-        // Data Tabungan Keluar
-        const dataTabunganKeluar = {
-            labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'],
-            datasets: [{
-                label: 'Transaksi Keluar',
-                data: [20000, 15000, 25000, 10000, 30000],
-                backgroundColor: '#e74a3b'
-            }]
-        };
-
-        // Buat chart dengan data Tabungan Masuk default
-        let chart = new Chart(ctx, {
-            type: 'bar',
-            data: dataTabunganMasuk,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        labels: {
-                            font: {
-                                size: 14
+            let chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: initialChartData.labels,
+                    datasets: [{
+                        label: 'Transaksi Masuk',
+                        data: initialChartData.income,
+                        backgroundColor: '#4e73df'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let value = context.parsed.y || 0;
+                                    return 'Rp ' + value.toLocaleString('id-ID');
+                                }
                             }
                         }
                     },
-                    tooltip: {
-                        enabled: true,
-                        mode: 'index',
-                        intersect: false,
-                        callbacks: {
-                            label: function(context) {
-                                let value = context.parsed.y || 0;
-                                return 'Rp ' + value.toLocaleString();
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return 'Rp ' + value.toLocaleString();
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'Rp ' + value.toLocaleString('id-ID');
+                                }
                             }
                         }
                     }
                 }
-            }
-        });
-
-        // Event listener untuk perubahan periode
-        document.getElementById('filterPeriode').addEventListener('change', function () {
-            const periode = this.value;
-
-            let newLabels, newData;
-
-            if (periode === 'harian') {
-                newLabels = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-            } else if (periode === 'bulanan') {
-                newLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei'];
-            } else {
-                newLabels = ['2023', '2024', '2025'];
-            }
-
-            const activeTabId = document.querySelector('#laporanTab .nav-link.active').id;
-
-            if (activeTabId === 'tabunganMasuk-tab') {
-                if (periode === 'harian') newData = [50000, 30000, 40000, 20000, 60000];
-                else if (periode === 'bulanan') newData = [200000, 150000, 300000, 250000, 400000];
-                else newData = [2500000, 3200000, 4100000];
-                chart.data.datasets[0].label = 'Transaksi Masuk';
-                chart.data.datasets[0].backgroundColor = '#4e73df';
-            } else {
-                if (periode === 'harian') newData = [20000, 15000, 25000, 10000, 30000];
-                else if (periode === 'bulanan') newData = [100000, 80000, 120000, 90000, 110000];
-                else newData = [1200000, 1100000, 1500000];
-                chart.data.datasets[0].label = 'Transaksi Keluar';
-                chart.data.datasets[0].backgroundColor = '#e74a3b';
-            }
-
-            chart.data.labels = newLabels;
-            chart.data.datasets[0].data = newData;
-            chart.update();
-        });
-
-        // Event listener saat tab berganti
-        document.querySelectorAll('#laporanTab .nav-link').forEach(button => {
-            button.addEventListener('shown.bs.tab', event => {
-                const periode = document.getElementById('filterPeriode').value;
-
-                let newLabels, newData;
-
-                if (periode === 'harian') {
-                    newLabels = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-                } else if (periode === 'bulanan') {
-                    newLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei'];
-                } else {
-                    newLabels = ['2023', '2024', '2025'];
-                }
-
-                if (event.target.id === 'tabunganMasuk-tab') {
-                    if (periode === 'harian') newData = [50000, 30000, 40000, 20000, 60000];
-                    else if (periode === 'bulanan') newData = [200000, 150000, 300000, 250000, 400000];
-                    else newData = [2500000, 3200000, 4100000];
-                    chart.data.datasets[0].label = 'Transaksi Masuk';
-                    chart.data.datasets[0].backgroundColor = '#4e73df';
-                } else {
-                    if (periode === 'harian') newData = [20000, 15000, 25000, 10000, 30000];
-                    else if (periode === 'bulanan') newData = [100000, 80000, 120000, 90000, 110000];
-                    else newData = [1200000, 1100000, 1500000];
-                    chart.data.datasets[0].label = 'Transaksi Keluar';
-                    chart.data.datasets[0].backgroundColor = '#e74a3b';
-                }
-
-                chart.data.labels = newLabels;
-                chart.data.datasets[0].data = newData;
-                chart.update();
             });
-        });
 
-        // Optional: trigger resize on window resize
-        window.addEventListener('resize', () => {
-            chart.resize();
+            function updateChart(chartData) {
+                const activeTabId = document.querySelector('#laporanTab .nav-link.active').id;
+                const isIncome = activeTabId === 'tabunganMasuk-tab';
+
+                chart.data.labels = chartData.labels;
+                chart.data.datasets[0].data = isIncome ? chartData.income : chartData.outcome;
+                chart.data.datasets[0].label = isIncome ? 'Transaksi Masuk' : 'Transaksi Keluar';
+                chart.data.datasets[0].backgroundColor = isIncome ? '#4e73df' : '#e74a3b';
+                chart.update();
+            }
+
+            function fetchDataAndUpdate(period) {
+                const url = `{{ route('kepala_sekolah.laporan_keuangan.data') }}?period=${period}`;
+
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateChart(data.chartData);
+                    // Note: Table update is not handled here as it would require more complex DOM manipulation.
+                    // For simplicity, the page can be reloaded on period change, or use a more advanced front-end framework.
+                });
+            }
+
+            document.getElementById('filterPeriode').addEventListener('change', function () {
+                // Simple page reload to get new data for tables as well
+                window.location.href = `{{ route('kepala_sekolah.laporan_keuangan.index') }}?period=${this.value}`;
+            });
+
+            document.querySelectorAll('#laporanTab .nav-link').forEach(button => {
+                button.addEventListener('shown.bs.tab', event => {
+                    const chartData = @json($chartData);
+                    updateChart(chartData);
+                });
+            });
+
+            window.addEventListener('resize', () => {
+                chart.resize();
+            });
         });
     </script>
 </body>
