@@ -16,6 +16,8 @@ $this->middleware('throttle:60,1')->only(['index']); // 60 request per menit
 $this->middleware('throttle.advanced:login')->only(['login']); // Menggunakan konfigurasi
 ```
 
+**Note:** Basic rate limiter menggunakan `CustomRateLimiter` class untuk menghindari konflik dengan Laravel's built-in `RateLimiter` facade.
+
 ## Konfigurasi Rate Limiter
 
 File konfigurasi: `config/rate_limiter.php`
