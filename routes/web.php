@@ -82,7 +82,9 @@ Route::middleware(['auth', 'role:kepala_sekolah'])->prefix('kepala_sekolah')->na
     Route::resource('/absensi', AbsensiControllerKepsek::class)->names('absensi');
     Route::post('/absensi/checkin', [AbsensiControllerKepsek::class, 'checkIn'])->name('absensi.checkin');
     Route::post('/absensi/checkout', [AbsensiControllerKepsek::class, 'checkOut'])->name('absensi.checkout');
-    Route::resource('/laporan-keuangan', LaporanKeuanganController::class)->names('laporan_keuangan');
+    Route::get('/laporan-keuangan', [LaporanKeuanganController::class, 'index'])->name('laporan_keuangan');
+    Route::get('/laporan-keuangan/data', [LaporanKeuanganController::class, 'getFinancialData'])->name('laporan_keuangan.data');
+    Route::resource('laporan-keuangan', LaporanKeuanganController::class)->names('laporan_keuangan');
 }); 
 
 // Guru Routes

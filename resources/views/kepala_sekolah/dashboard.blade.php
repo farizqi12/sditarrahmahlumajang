@@ -42,42 +42,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 col-6 stats-card">
-                <div class="card p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Tabungan Masuk</h6>
-                            <h3 class="mb-0"></h3>
-                        </div>
-                        <i class="bi bi-graph-up-arrow text-success"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-6 stats-card">
-                <div class="card p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">Tabungan keluar</h6>
-                            <h3 class="mb-0"></h3>
-                        </div>
-                        <i class="bi bi-graph-down-arrow text-danger"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-2 g-4 justify-content-center">
-            <div class="col-md-3 col-6 stats-card">
-                <a href="{{ route('kepala_sekolah.absensi.index') }}" class="text-decoration-none">
-                    <div class="card p-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-1">Absensi</h6>
-                            </div>
-                            <i class="bi bi-building-check"></i>
-                        </div>
-                    </div>
-                </a>
-            </div>
 
             <div class="col-md-3 col-6 stats-card">
                 <a href="" class="text-decoration-none">
@@ -91,7 +55,20 @@
                     </div>
                 </a>
             </div>
+            <div class="col-md-3 col-6 stats-card">
+                <a href="{{ route('kepala_sekolah.absensi.index') }}" class="text-decoration-none">
+                    <div class="card p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Absensi</h6>
+                            </div>
+                            <i class="bi bi-building-check"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
+
         <!-- Recent Users Table -->
         <div class="container-fluid">
             <div class="card p-4 mt-4">
