@@ -15,6 +15,7 @@ use App\Http\Controllers\Staff_TU\AbsensiController as StaffTUAbsensiController;
 use App\Http\Controllers\Staff_TU\DashboardController as StaffTUDashboardController;
 use App\Http\Controllers\Staff_TU\SiswaController as StaffTUSiswaController;
 use App\Http\Controllers\Staff_TU\WalletController as StaffTUWalletController;
+use App\Http\Controllers\Staff_TU\CoursesController as StaffTUCoursesController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -108,6 +109,16 @@ Route::middleware(['auth', 'role:staff_tu'])->prefix('staff_tu')->name('staff_tu
     Route::post('/absensi/checkout', [StaffTUAbsensiController::class, 'checkOut'])->name('absensi.checkout');
     Route::post('/absensi/scan', [StaffTUAbsensiController::class, 'scan'])->name('absensi.scan');
     Route::get('/siswa', [StaffTUSiswaController::class, 'index'])->name('siswa.index');
+
+    // Manajemen Kelas (Staff TU)
+    Route::get('courses', [StaffTUCoursesController::class, 'index'])->name('courses.index');
+    Route::post('courses', [StaffTUCoursesController::class, 'store'])->name('courses.store');
+    Route::put('courses/{course}', [StaffTUCoursesController::class, 'update'])->name('courses.update');
+    Route::delete('courses/{course}', [StaffTUCoursesController::class, 'destroy'])->name('courses.destroy');
+    Route::patch('courses/{course}/toggle-status', [StaffTUCoursesController::class, 'toggleStatus'])->name('courses.toggleStatus');
+    Route::get('courses/{course}/manage', [StaffTUCoursesController::class, 'manage'])->name('courses.manage');
+    Route::post('courses/{course}/add-students', [StaffTUCoursesController::class, 'addStudents'])->name('courses.addStudents');
+    Route::delete('courses/{course}/remove-student/{student}', [StaffTUCoursesController::class, 'removeStudent'])->name('courses.removeStudent');
 
     // Tabungan (Wallet) - Staff TU
     Route::resource('tabungan', StaffTUWalletController::class)->names('tabungan')->except(['create', 'edit', 'update', 'destroy']);
