@@ -156,6 +156,9 @@
             <a href="{{ route('staff_tu.siswa.index') }}" class="{{ Request::is('staff_tu/siswa*') ? 'active' : '' }}">
                 <i class="bi bi-person-rolodex me-2"></i> Data Siswa
             </a>
+            <a href="{{ route('staff_tu.tabungan.index') }}" class="{{ Request::is('staff_tu/tabungan*') ? 'active' : '' }}">
+                <i class="bi bi-wallet2 me-2"></i> Tabungan
+            </a>
         @endif
 
     @endauth

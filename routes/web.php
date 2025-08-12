@@ -14,6 +14,7 @@ use App\Http\Controllers\Kepala_Sekolah\LaporanKeuanganController;
 use App\Http\Controllers\Staff_TU\AbsensiController as StaffTUAbsensiController;
 use App\Http\Controllers\Staff_TU\DashboardController as StaffTUDashboardController;
 use App\Http\Controllers\Staff_TU\SiswaController as StaffTUSiswaController;
+use App\Http\Controllers\Staff_TU\WalletController as StaffTUWalletController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -107,4 +108,11 @@ Route::middleware(['auth', 'role:staff_tu'])->prefix('staff_tu')->name('staff_tu
     Route::post('/absensi/checkout', [StaffTUAbsensiController::class, 'checkOut'])->name('absensi.checkout');
     Route::post('/absensi/scan', [StaffTUAbsensiController::class, 'scan'])->name('absensi.scan');
     Route::get('/siswa', [StaffTUSiswaController::class, 'index'])->name('siswa.index');
+
+    // Tabungan (Wallet) - Staff TU
+    Route::resource('tabungan', StaffTUWalletController::class)->names('tabungan')->except(['create', 'edit', 'update', 'destroy']);
+    Route::post('tabungan/{user}', [StaffTUWalletController::class, 'store'])->name('tabungan.store');
+    Route::get('tabungan/pending', [StaffTUWalletController::class, 'pending'])->name('tabungan.pending');
+    Route::patch('tabungan/pending/{transaction}/accept', [StaffTUWalletController::class, 'acceptTransaction'])->name('tabungan.accept');
+    Route::post('tabungan/pending/{transaction}/reject', [StaffTUWalletController::class, 'rejectTransaction'])->name('tabungan.reject');
 });
