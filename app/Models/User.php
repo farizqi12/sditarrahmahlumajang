@@ -22,6 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
+        'qr_code',
+        'qr_code_path',
     ];
 
     public function role()
@@ -57,6 +59,26 @@ class User extends Authenticatable
     public function walletTransactionsCreated()
     {
         return $this->hasMany(WalletTransaction::class, 'created_by');
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function scannedAttendances()
+    {
+        return $this->hasMany(Attendance::class, 'scanned_by');
+    }
+
+    /**
+     * Generate unique QR code for user
+     */
+    public function generateQrCode()
+    {
+        $qrCode = 'USER_' . $this->id . '_' . time() . '_' . strtoupper(substr(md5($this->email), 0, 8));
+        $this->update(['qr_code' => $qrCode]);
+        return $qrCode;
     }
     /**
      * The attributes that should be hidden for serialization.

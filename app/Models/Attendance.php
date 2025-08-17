@@ -11,11 +11,13 @@ class Attendance extends Model
 
     protected $fillable = [
         'user_id',
-        'location_id',
+        'scanned_by',
+        'device_id',
         'date',
         'check_in',
         'check_out',
         'status',
+        'notes',
     ];
 
     protected $casts = [
@@ -29,8 +31,8 @@ class Attendance extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function location()
+    public function scannedBy()
     {
-        return $this->belongsTo(AttendanceLocation::class, 'location_id');
+        return $this->belongsTo(User::class, 'scanned_by');
     }
 }

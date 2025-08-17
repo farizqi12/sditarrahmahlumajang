@@ -8,7 +8,9 @@ use App\Http\Controllers\Admin\Login;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WalletController;
+use App\Http\Controllers\Admin\QrCodeController;
 use App\Http\Controllers\Kepala_Sekolah\AbsensiControllerKepsek;
+use App\Http\Controllers\QrCodeScannerController;
 use App\Http\Controllers\Kepala_Sekolah\LaporanAkademikController;
 use App\Http\Controllers\Kepala_Sekolah\LaporanKeuanganController;
 use App\Http\Controllers\Staff_TU\AbsensiController as StaffTUAbsensiController;
@@ -77,6 +79,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('absensi/locations', [AbsensiController::class, 'storeLocation'])->name('absensi.locations.store');
     Route::delete('absensi/locations/{location}', [AbsensiController::class, 'destroyLocation'])->name('absensi.locations.destroy');
     Route::get('absensi/locations/{location}/qrcode', [AbsensiController::class, 'showQrCode'])->name('absensi.locations.qrcode');
+    
+    // QR Code Management
+    Route::get('qr-codes', [QrCodeController::class, 'index'])->name('qr-codes.index');
+    Route::post('qr-codes/generate', [QrCodeController::class, 'generateQrCode'])->name('qr-codes.generate');
+    Route::post('qr-codes/bulk-generate', [QrCodeController::class, 'bulkGenerate'])->name('qr-codes.bulk-generate');
+    Route::get('qr-codes/download', [QrCodeController::class, 'downloadQrCode'])->name('qr-codes.download');
+    Route::get('qr-codes/{user}/preview', [QrCodeController::class, 'preview'])->name('qr-codes.preview');
+    Route::get('qr-codes/{user}/print', [QrCodeController::class, 'printQrCode'])->name('qr-codes.print');
 });
 
 // Kepala Sekolah Routes
@@ -126,4 +136,11 @@ Route::middleware(['auth', 'role:staff_tu'])->prefix('staff_tu')->name('staff_tu
     Route::get('tabungan/pending', [StaffTUWalletController::class, 'pending'])->name('tabungan.pending');
     Route::patch('tabungan/pending/{transaction}/accept', [StaffTUWalletController::class, 'acceptTransaction'])->name('tabungan.accept');
     Route::post('tabungan/pending/{transaction}/reject', [StaffTUWalletController::class, 'rejectTransaction'])->name('tabungan.reject');
+});
+
+// QR Code Scanner Routes (Public access for scanning)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/scanner', [QrCodeScannerController::class, 'showScanner'])->name('scanner.index');
+    Route::post('/scanner/scan', [QrCodeScannerController::class, 'scanQrCode'])->name('scanner.scan');
+    Route::get('/scanner/stats', [QrCodeScannerController::class, 'getAttendanceStats'])->name('scanner.stats');
 });
