@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin Users - E-Learning</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -82,6 +83,21 @@
                                         <i class="bi bi-pencil-square text-white"></i>
                                         <span class="d-none d-sm-inline">Edit</span>
                                     </button>
+
+                                    <!-- Tombol Download QR Code -->
+                                    @if($user->qr_code)
+                                        <button class="btn btn-info btn-sm d-flex align-items-center gap-1"
+                                            onclick="downloadQrCode({{ $user->id }})" title="Download QR Code">
+                                            <i class="bi bi-qr-code text-white"></i>
+                                            <span class="d-none d-sm-inline">QR</span>
+                                        </button>
+                                    @else
+                                        <button class="btn btn-warning btn-sm d-flex align-items-center gap-1"
+                                            onclick="generateQrCode({{ $user->id }})" title="Generate QR Code">
+                                            <i class="bi bi-plus-circle text-white"></i>
+                                            <span class="d-none d-sm-inline">QR</span>
+                                        </button>
+                                    @endif
 
                                     <!-- Tombol Hapus -->
                                     <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
@@ -273,6 +289,39 @@
                 }
             });
         });
+
+        // QR Code functions
+        function downloadQrCode(userId) {
+            window.open(`{{ url('admin/qr-codes/download') }}?user_id=${userId}`, '_blank');
+        }
+
+        function generateQrCode(userId) {
+            if (confirm('Apakah Anda yakin ingin membuat QR Code untuk user ini?')) {
+                fetch('{{ route("admin.qr-codes.generate") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        user_id: userId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload(); // Reload halaman untuk update status QR code
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat membuat QR Code');
+                });
+            }
+        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
