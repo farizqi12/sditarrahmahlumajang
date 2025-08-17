@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -34,44 +35,10 @@
             padding: 2rem;
         }
         
-        .qr-input-section {
-            background: #f8f9fa;
+        #preview {
+            width: 100%;
             border-radius: 15px;
-            padding: 2rem;
             margin-bottom: 2rem;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-        
-        .btn-action {
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-checkin {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            border: none;
-            color: white;
-        }
-        
-        .btn-checkout {
-            background: linear-gradient(135deg, #dc3545, #fd7e14);
-            border: none;
-            color: white;
-        }
-        
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
         
         .result-section {
@@ -114,18 +81,6 @@
             border: none;
         }
         
-        .form-control {
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-            padding: 0.75rem 1rem;
-            font-size: 1.1rem;
-        }
-        
-        .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        }
-        
         .loading {
             display: none;
             text-align: center;
@@ -143,35 +98,11 @@
         <div class="scanner-container">
             <div class="scanner-header">
                 <h1><i class="fas fa-qrcode"></i> Sistem Absensi QR Code</h1>
-                <p class="mb-0">Scan QR Code dari ID Card untuk absen</p>
+                <p class="mb-0">Arahkan QR Code ke kamera untuk melakukan absensi</p>
             </div>
             
             <div class="scanner-body">
-                <!-- QR Code Input Section -->
-                <div class="qr-input-section">
-                    <h4 class="text-center mb-3">
-                        <i class="fas fa-barcode"></i> Masukkan QR Code
-                    </h4>
-                    
-                    <div class="mb-3">
-                        <label for="qrCode" class="form-label">QR Code dari ID Card:</label>
-                        <input type="text" class="form-control" id="qrCode" placeholder="Scan atau ketik QR Code..." autofocus>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="deviceId" class="form-label">ID Perangkat (Opsional):</label>
-                        <input type="text" class="form-control" id="deviceId" placeholder="Contoh: DEVICE_001">
-                    </div>
-                    
-                    <div class="action-buttons">
-                        <button type="button" class="btn btn-action btn-checkin" onclick="processAttendance('checkin')">
-                            <i class="fas fa-sign-in-alt"></i> Check In
-                        </button>
-                        <button type="button" class="btn btn-action btn-checkout" onclick="processAttendance('checkout')">
-                            <i class="fas fa-sign-out-alt"></i> Check Out
-                        </button>
-                    </div>
-                </div>
+                <video id="preview"></video>
                 
                 <!-- Loading Section -->
                 <div class="loading" id="loading">
@@ -224,11 +155,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Set CSRF token for AJAX requests
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+        scanner.addListener('scan', function (content) {
+            processAttendance(content);
+        });
+        Instascan.Camera.getCameras().then(function (cameras) {
+            if (cameras.length > 0) {
+                scanner.start(cameras[0]);
+            } else {
+                console.error('No cameras found.');
+                alert('No cameras found.');
             }
+        }).catch(function (e) {
+            console.error(e);
+            alert(e);
         });
 
         // Load statistics on page load
@@ -237,30 +177,20 @@
         });
 
         // Process attendance
-        function processAttendance(action) {
-            const qrCode = document.getElementById('qrCode').value.trim();
-            const deviceId = document.getElementById('deviceId').value.trim();
-            
-            if (!qrCode) {
-                showResult('error', 'QR Code harus diisi!');
-                return;
-            }
-            
+        function processAttendance(qrCode) {
             // Show loading
             document.getElementById('loading').style.display = 'block';
             document.getElementById('resultSection').style.display = 'none';
             
             // Make AJAX request
-            fetch('/scanner/scan', {
+            fetch('{{ route("admin.scanner.scan") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify({
-                    qr_code: qrCode,
-                    device_id: deviceId,
-                    action: action
+                    qr_code: qrCode
                 })
             })
             .then(response => response.json())
@@ -269,7 +199,6 @@
                 
                 if (data.success) {
                     showResult('success', data.message, data.data);
-                    document.getElementById('qrCode').value = '';
                     loadStats(); // Refresh statistics
                 } else {
                     showResult('error', data.message);
@@ -324,7 +253,7 @@
 
         // Load statistics
         function loadStats() {
-            fetch('/scanner/stats')
+            fetch('{{ route("admin.scanner.stats") }}')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -338,13 +267,6 @@
                 console.error('Error loading stats:', error);
             });
         }
-
-        // Auto focus on QR code input
-        document.getElementById('qrCode').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                processAttendance('checkin');
-            }
-        });
 
         // Auto refresh stats every 30 seconds
         setInterval(loadStats, 30000);

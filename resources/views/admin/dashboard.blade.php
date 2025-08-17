@@ -75,6 +75,13 @@
             </div>
         </div>
 
+        <div class="row mt-4">
+            <div class="col-12">
+                <a href="{{ route('admin.scanner.index') }}" class="btn btn-primary w-100">
+                    <i class="bi bi-qr-code-scan me-2"></i> Buka Halaman Scanner
+                </a>
+            </div>
+        </div>
         <!-- Recent Users Table -->
         <div class="card p-3 mt-4">
             <h5>User Terbaru</h5>

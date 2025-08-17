@@ -26,8 +26,6 @@ class QrCodeScannerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'qr_code' => 'required|string',
-            'device_id' => 'nullable|string',
-            'action' => 'required|in:checkin,checkout',
         ]);
 
         if ($validator->fails()) {
@@ -58,10 +56,49 @@ class QrCodeScannerController extends Controller
                                   ->where('date', $today)
                                   ->first();
 
-            if ($request->action === 'checkin') {
-                return $this->processCheckIn($user, $attendance, $currentTime, $scannerUser, $request->device_id);
+            if (!$attendance) {
+                // Create new attendance record for check-in
+                $attendance = Attendance::create([
+                    'user_id' => $user->id,
+                    'scanned_by' => $scannerUser->id,
+                    'date' => $currentTime->toDateString(),
+                    'check_in' => $currentTime->toTimeString(),
+                    'status' => 'hadir'
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Check-in berhasil untuk ' . $user->name,
+                    'data' => [
+                        'user_name' => $user->name,
+                        'check_in_time' => $currentTime->format('H:i:s'),
+                        'date' => $currentTime->format('Y-m-d'),
+                        'scanned_by' => $scannerUser->name
+                    ]
+                ]);
+            } elseif (!$attendance->check_out) {
+                // Update existing record for check-out
+                $attendance->update([
+                    'check_out' => $currentTime->toTimeString(),
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Check-out berhasil untuk ' . $user->name,
+                    'data' => [
+                        'user_name' => $user->name,
+                        'check_in_time' => $attendance->check_in,
+                        'check_out_time' => $currentTime->format('H:i:s'),
+                        'date' => $currentTime->format('Y-m-d'),
+                        'scanned_by' => $scannerUser->name
+                    ]
+                ]);
             } else {
-                return $this->processCheckOut($user, $attendance, $currentTime, $scannerUser, $request->device_id);
+                // User has already checked in and out
+                return response()->json([
+                    'success' => false,
+                    'message' => $user->name . ' sudah melakukan check-in dan check-out hari ini.'
+                ], 400);
             }
 
         } catch (\Exception $e) {
@@ -70,118 +107,6 @@ class QrCodeScannerController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
-    }
-
-    /**
-     * Process check-in
-     */
-    private function processCheckIn($user, $attendance, $currentTime, $scannerUser, $deviceId)
-    {
-        if ($attendance && $attendance->check_in) {
-            return response()->json([
-                'success' => false,
-                'message' => $user->name . ' sudah melakukan check-in hari ini pada ' . $attendance->check_in
-            ], 400);
-        }
-
-        if (!$attendance) {
-            // Create new attendance record
-            $attendance = Attendance::create([
-                'user_id' => $user->id,
-                'scanned_by' => $scannerUser->id,
-                'device_id' => $deviceId,
-                'date' => $currentTime->toDateString(),
-                'check_in' => $currentTime->toTimeString(),
-                'status' => 'hadir'
-            ]);
-        } else {
-            // Update existing record
-            $attendance->update([
-                'check_in' => $currentTime->toTimeString(),
-                'scanned_by' => $scannerUser->id,
-                'device_id' => $deviceId,
-                'status' => 'hadir'
-            ]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Check-in berhasil untuk ' . $user->name,
-            'data' => [
-                'user_name' => $user->name,
-                'check_in_time' => $currentTime->format('H:i:s'),
-                'date' => $currentTime->format('Y-m-d'),
-                'scanned_by' => $scannerUser->name
-            ]
-        ]);
-    }
-
-    /**
-     * Process check-out
-     */
-    private function processCheckOut($user, $attendance, $currentTime, $scannerUser, $deviceId)
-    {
-        if (!$attendance || !$attendance->check_in) {
-            return response()->json([
-                'success' => false,
-                'message' => $user->name . ' belum melakukan check-in hari ini'
-            ], 400);
-        }
-
-        if ($attendance->check_out) {
-            return response()->json([
-                'success' => false,
-                'message' => $user->name . ' sudah melakukan check-out hari ini pada ' . $attendance->check_out
-            ], 400);
-        }
-
-        $attendance->update([
-            'check_out' => $currentTime->toTimeString(),
-            'scanned_by' => $scannerUser->id,
-            'device_id' => $deviceId,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Check-out berhasil untuk ' . $user->name,
-            'data' => [
-                'user_name' => $user->name,
-                'check_in_time' => $attendance->check_in,
-                'check_out_time' => $currentTime->format('H:i:s'),
-                'date' => $currentTime->format('Y-m-d'),
-                'scanned_by' => $scannerUser->name
-            ]
-        ]);
-    }
-
-    /**
-     * Generate QR code for user
-     */
-    public function generateQrCode(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User ID tidak valid',
-                'errors' => $validator->errors()
-            ], 400);
-        }
-
-        $user = User::find($request->user_id);
-        $qrCode = $user->generateQrCode();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'QR Code berhasil dibuat',
-            'data' => [
-                'qr_code' => $qrCode,
-                'user_name' => $user->name
-            ]
-        ]);
     }
 
     /**

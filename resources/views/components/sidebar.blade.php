@@ -103,8 +103,11 @@
                 <i class="bi bi-calendar-check me-2"></i> Absensi
             </a>
             <a href="{{ route('admin.reports') }}"
-                class="{{ Request::is('admin/reports*') ? 'active' : '' }}">
+                class="{{ Request::is('admin/reports') ? 'active' : '' }}">
                 <i class="bi bi-bar-chart me-2"></i> Reports
+            </a>
+            <a href="{{ route('admin.reports.attendance') }}" class="{{ Request::is('admin/reports/attendance*') ? 'active' : '' }}">
+                <i class="bi bi-calendar-check me-2"></i> Laporan Absensi
             </a>
             <a href="{{ route('admin.tabungan.index') }}"
                 class="{{ Request::is('admin/tabungan*') ? 'active' : '' }}">
