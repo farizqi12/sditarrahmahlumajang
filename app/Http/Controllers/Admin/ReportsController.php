@@ -4,14 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClassModel;
+use App\Models\Attendance;
+use App\Models\User;
 use Illuminate\Http\Request;
+use PDF;
+
 
 class ReportsController extends Controller
 {
     public function __construct()
     {
         // Rate limiter untuk laporan
-        $this->middleware('throttle:30,1')->only(['index', 'showClassReport']); // 30 request per menit untuk generate laporan
+        $this->middleware('throttle:30,1')->only(['index', 'showClassReport', 'attendanceReport', 'exportAttendanceReport', 'exportUserAttendanceReport']); // 30 request per menit untuk generate laporan
     }
 
     /**
@@ -56,5 +60,42 @@ class ReportsController extends Controller
             'class' => $allClasses,
             'currentClass' => $class,
         ]);
+    }
+
+    public function attendanceReport(Request $request)
+    {
+        $attendances = Attendance::with(['user', 'scannedBy'])->latest()->paginate(15);
+        $users = User::all();
+
+        return view('admin.reports.attendance', compact('attendances', 'users'));
+    }
+
+    public function exportAttendanceReport(Request $request)
+    {
+        $month = $request->input('month', date('Y-m'));
+        $attendances = Attendance::with(['user', 'scannedBy'])
+            ->whereYear('date', substr($month, 0, 4))
+            ->whereMonth('date', substr($month, 5, 2))
+            ->get();
+
+        $pdf = PDF::loadView('admin.reports.attendance_pdf', compact('attendances', 'month'));
+        return $pdf->download('laporan-absensi-' . $month . '.pdf');
+    }
+
+    public function exportUserAttendanceReport(Request $request)
+    {
+        $month = $request->input('month', date('Y-m'));
+        $userId = $request->input('user_id');
+
+        $user = User::findOrFail($userId);
+
+        $attendances = Attendance::with(['user', 'scannedBy'])
+            ->where('user_id', $userId)
+            ->whereYear('date', substr($month, 0, 4))
+            ->whereMonth('date', substr($month, 5, 2))
+            ->get();
+
+        $pdf = PDF::loadView('admin.reports.attendance_pdf', compact('attendances', 'month', 'user'));
+        return $pdf->download('laporan-absensi-' . $user->name . '-' . $month . '.pdf');
     }
 }
