@@ -90,83 +90,14 @@
 
         {{-- Menu khusus Admin --}}
         @if (Auth::user()->role->name == 'admin')
-            <a href="{{ route('admin.courses.index') }}"
-                class="{{ Request::is('admin/courses*') ? 'active' : '' }}">
-                <i class="bi bi-book me-2"></i> Courses
-            </a>
             <a href="{{ route('admin.users.index') }}"
                 class="{{ Request::is('admin/users*') ? 'active' : '' }}">
                 <i class="bi bi-people me-2"></i> Users
             </a>
-            <a href="{{ route('admin.absensi.index') }}"
-                class="{{ Request::is('admin/absensi*') ? 'active' : '' }}">
-                <i class="bi bi-calendar-check me-2"></i> Absensi
-            </a>
-            <a href="{{ route('admin.reports') }}"
-                class="{{ Request::is('admin/reports') ? 'active' : '' }}">
-                <i class="bi bi-bar-chart me-2"></i> Reports
-            </a>
             <a href="{{ route('admin.reports.attendance') }}" class="{{ Request::is('admin/reports/attendance*') ? 'active' : '' }}">
                 <i class="bi bi-calendar-check me-2"></i> Laporan Absensi
             </a>
-            <a href="{{ route('admin.tabungan.index') }}"
-                class="{{ Request::is('admin/tabungan*') ? 'active' : '' }}">
-                <i class="bi bi-wallet2 me-2"></i> Tabungan
-            </a>
         @endif
-
-        {{-- Menu khusus Kepala Sekolah --}}
-        @if (Auth::user()->role->name == 'kepala_sekolah')
-            <a href="{{ route('kepala_sekolah.absensi.index') }}" class="{{ Request::is('kepala_sekolah/absensi*') ? 'active' : '' }}">
-                <i class="bi bi-calendar-check me-2"></i> Absensi
-            </a>
-            <a href="{{ route('kepala_sekolah.laporan_keuangan.index') }}" class="{{ Request::is('kepala_sekolah/laporan-keuangan*') ? 'active' : '' }}">
-                <i class="bi bi-cash-coin me-2"></i> Laporan Keuangan
-            </a>
-        @endif
-
-        {{-- Menu khusus Guru --}}
-        @if (Auth::user()->role->name == 'guru')
-            <a href="#">
-                <i class="bi bi-book-half me-2"></i> Kelas Saya
-            </a>
-            <a href="#">
-                <i class="bi bi-journal-check me-2"></i> Materi & Tugas
-            </a>
-            <a href="#">
-                <i class="bi bi-person-check me-2"></i> Absensi Siswa
-            </a>
-        @endif
-
-        {{-- Menu khusus Murid --}}
-        @if (Auth::user()->role->name == 'murid')
-            <a href="#">
-                <i class="bi bi-book-reader me-2"></i> Jadwal Pelajaran
-            </a>
-            <a href="#">
-                <i class="bi bi-pen me-2"></i> Tugas
-            </a>
-            <a href="#">
-                <i class="bi bi-wallet me-2"></i> Tabungan Saya
-            </a>
-        @endif
-
-        {{-- Menu khusus Staff TU --}}
-        @if (Auth::user()->role->name == 'staff_tu')
-            <a href="{{ route('staff_tu.absensi.index') }}" class="{{ Request::is('staff_tu/absensi*') ? 'active' : '' }}">
-                <i class="bi bi-calendar-check me-2"></i> Absensi
-            </a>
-            <a href="{{ route('staff_tu.siswa.index') }}" class="{{ Request::is('staff_tu/siswa*') ? 'active' : '' }}">
-                <i class="bi bi-person-rolodex me-2"></i> Data Siswa
-            </a>
-            <a href="{{ route('staff_tu.courses.index') }}" class="{{ Request::is('staff_tu/courses*') ? 'active' : '' }}">
-                <i class="bi bi-book me-2"></i> Kelas
-            </a>
-            <a href="{{ route('staff_tu.tabungan.index') }}" class="{{ Request::is('staff_tu/tabungan*') ? 'active' : '' }}">
-                <i class="bi bi-wallet2 me-2"></i> Tabungan
-            </a>
-        @endif
-
     @endauth
 </div>
 <script>

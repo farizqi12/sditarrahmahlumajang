@@ -15,10 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             UserSeeder::class,
-            WalletSeeder::class,
             AttendanceLocationSeeder::class,
-            PendingTransactionSeeder::class,
-            MuridWithPendingTransactionsSeeder::class,
         ]);
     }
 }

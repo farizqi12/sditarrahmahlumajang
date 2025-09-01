@@ -24,6 +24,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('qr_code')->unique()->nullable();
+            $table->string('qr_code_path')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
@@ -55,6 +57,7 @@ return new class extends Migration
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 11, 8);
             $table->decimal('radius_meter', 8, 2)->default(100);
+            $table->string('qrcode_path')->nullable();
             $table->timestamps();
         });
 
@@ -62,48 +65,17 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('location_id')->nullable()->constrained('attendance_locations')->onDelete('cascade');
+            $table->string('scanned_by')->nullable(); // ID user yang melakukan scan
+            $table->string('device_id')->nullable(); // ID device yang digunakan untuk scan
             $table->date('date');
             $table->time('check_in')->nullable();
             $table->time('check_out')->nullable();
             $table->enum('status', ['hadir', 'sakit', 'izin', 'alpa', 'libur'])->default('hadir');
+            $table->text('notes')->nullable(); // Catatan tambahan
             $table->timestamps();
         });
 
-        // 7. Wallets
-        Schema::create('wallets', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
-            $table->decimal('balance', 12, 2)->default(0);
-            $table->timestamps();
-        });
-
-        // 8. Wallet Transactions
-        Schema::create('wallet_transactions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('wallet_id')->constrained()->onDelete('cascade');
-            $table->enum('type', [
-                'deposit',
-                'withdrawal',
-                'transfer_in',
-                'transfer_out'
-            ]);
-            $table->decimal('amount', 12, 2);
-            $table->decimal('balance_before', 12, 2);
-            $table->decimal('balance_after', 15, 2)->nullable();
-            $table->text('description')->nullable();
-            $table->enum('status', ['pending', 'accepted', 'rejected'])->default('accepted');
-            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->timestamps();
-        });
-
-        // 9. Savings
-        Schema::create('savings', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('wallet_transaction_id')->constrained()->onDelete('cascade');
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
-        });
+        
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
@@ -120,15 +92,7 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
 
-        // E-learning Tables
-        Schema::create('academic_years', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->boolean('is_active')->default(false);
-            $table->timestamps();
-        });
+        
 
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
@@ -136,84 +100,25 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
             $table->foreignId('teacher_id')->nullable()->constrained('teachers')->onDelete('set null');
-            $table->foreignId('academic_year_id')->nullable()->constrained('academic_years')->onDelete('set null');
             $table->timestamps();
         });
 
-        Schema::create('subjects', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->text('description')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('class_subject', function (Blueprint $table) {
-            $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
-            $table->foreignId('subject_id')->constrained('subjects')->onDelete('cascade');
-            $table->primary(['class_id', 'subject_id']);
-            $table->timestamps();
-        });
+        
 
         Schema::create('enrollments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
             $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
-            $table->foreignId('academic_year_id')->nullable()->constrained('academic_years')->onDelete('set null');
             $table->date('enrollment_date');
             $table->enum('status', ['active', 'completed', 'dropped'])->default('active');
             $table->timestamps();
         });
 
-        Schema::create('assignments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
-            $table->foreignId('subject_id')->nullable()->constrained('subjects')->onDelete('set null');
-            $table->foreignId('academic_year_id')->nullable()->constrained('academic_years')->onDelete('set null');
-            $table->string('title');
-            $table->text('description')->nullable();
-            $table->timestamp('due_date')->nullable();
-            $table->integer('max_score')->default(100);
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
-            $table->timestamps();
-        });
+        
 
-        Schema::create('submissions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('assignment_id')->constrained('assignments')->onDelete('cascade');
-            $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
-            $table->timestamp('submission_date');
-            $table->string('file_path')->nullable();
-            $table->decimal('grade', 5, 2)->nullable();
-            $table->text('feedback')->nullable();
-            $table->timestamps();
-        });
+        
 
-        Schema::create('learning_materials', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
-            $table->foreignId('subject_id')->nullable()->constrained('subjects')->onDelete('set null');
-            $table->foreignId('academic_year_id')->nullable()->constrained('academic_years')->onDelete('set null');
-            $table->string('title');
-            $table->text('description')->nullable();
-            $table->string('file_path')->nullable();
-            $table->string('url')->nullable();
-            $table->enum('type', ['document', 'video', 'link', 'other'])->default('document');
-            $table->foreignId('uploaded_by')->constrained('users')->onDelete('cascade');
-            $table->timestamps();
-        });
-
-        Schema::create('schedules', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
-            $table->foreignId('subject_id')->constrained('subjects')->onDelete('cascade');
-            $table->foreignId('teacher_id')->constrained('teachers')->onDelete('cascade');
-            $table->foreignId('academic_year_id')->nullable()->constrained('academic_years')->onDelete('set null');
-            $table->enum('day_of_week', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
-            $table->time('start_time');
-            $table->time('end_time');
-            $table->string('room')->nullable();
-            $table->timestamps();
-        });
+        
 
         Schema::create('attendance_location_role', function (Blueprint $table) {
             $table->id();
@@ -229,20 +134,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('attendance_location_role');
-        Schema::dropIfExists('schedules');
-        Schema::dropIfExists('learning_materials');
-        Schema::dropIfExists('submissions');
-        Schema::dropIfExists('assignments');
         Schema::dropIfExists('enrollments');
-        Schema::dropIfExists('class_subject');
-        Schema::dropIfExists('subjects');
         Schema::dropIfExists('classes');
-        Schema::dropIfExists('academic_years');
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('savings');
-        Schema::dropIfExists('wallet_transactions');
-        Schema::dropIfExists('wallets');
         Schema::dropIfExists('attendances');
         Schema::dropIfExists('attendance_locations');
         Schema::dropIfExists('teachers');
