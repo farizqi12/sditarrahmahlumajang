@@ -79,26 +79,18 @@
     }
 </style>
 <div class="sidebar" id="sidebar">
-    @auth
-        <h4 class="text-white text-center mb-4">E-Learning {{ ucfirst(str_replace('_', ' ', Auth::user()->role->name)) }}</h4>
+    <h4 class="text-white text-center mb-4">E-Learning Admin</h4>
 
-        {{-- Menu untuk semua role --}}
-        <a href="{{ route(Auth::user()->role->name . '.dashboard') }}"
-            class="{{ Request::is(Auth::user()->role->name . '/dashboard') ? 'active' : '' }}">
-            <i class="bi bi-house-door me-2"></i> Dashboard
-        </a>
+    <a href="#" class="active">
+        <i class="bi bi-house-door me-2"></i> Dashboard
+    </a>
 
-        {{-- Menu khusus Admin --}}
-        @if (Auth::user()->role->name == 'admin')
-            <a href="{{ route('admin.users.index') }}"
-                class="{{ Request::is('admin/users*') ? 'active' : '' }}">
-                <i class="bi bi-people me-2"></i> Users
-            </a>
-            <a href="{{ route('admin.reports.attendance') }}" class="{{ Request::is('admin/reports/attendance*') ? 'active' : '' }}">
-                <i class="bi bi-calendar-check me-2"></i> Laporan Absensi
-            </a>
-        @endif
-    @endauth
+    <a href="#">
+        <i class="bi bi-people me-2"></i> Users
+    </a>
+    <a href="#">
+        <i class="bi bi-calendar-check me-2"></i> Laporan Absensi
+    </a>
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -111,7 +103,11 @@
             sidebarOverlay.classList.toggle("active");
         }
 
-        sidebarToggler.addEventListener("click", toggleSidebar);
-        sidebarOverlay.addEventListener("click", toggleSidebar);
+        if (sidebarToggler) {
+            sidebarToggler.addEventListener("click", toggleSidebar);
+        }
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener("click", toggleSidebar);
+        }
     });
 </script>

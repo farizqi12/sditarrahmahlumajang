@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ID Card - {{ $user->name }}</title>
+    <title>ID Card - Dummy User</title>
     <style>
         @media print {
             body { margin: 0; }
@@ -127,23 +127,17 @@
             </div>
             <div class="id-card-body">
                 <div class="user-info">
-                    <div class="user-name">{{ $user->name }}</div>
+                    <div class="user-name">Dummy User</div>
                     <div class="user-details">
-                        <strong>Email:</strong> {{ $user->email }}<br>
-                        <strong>Role:</strong> {{ ucfirst(str_replace('_', ' ', $user->role->name)) }}<br>
-                        <strong>ID:</strong> {{ $user->id }}<br>
-                        <strong>QR:</strong> {{ substr($user->qr_code, 0, 20) }}...
+                        <strong>Email:</strong> dummy@example.com<br>
+                        <strong>Role:</strong> Murid<br>
+                        <strong>ID:</strong> 1<br>
+                        <strong>QR:</strong> DUMMY-QR-CODE...
                     </div>
                 </div>
                 <div class="qr-code-section">
-                    @if($user->qr_code_path)
-                        <img src="{{ Storage::url($user->qr_code_path) }}" alt="QR Code" class="qr-code">
-                    @else
-                        <div class="qr-code" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">
-                            QR<br>Code
-                        </div>
-                    @endif
-                    <div class="qr-code-text">{{ $user->qr_code }}</div>
+                    <img src="https://via.placeholder.com/80" alt="QR Code" class="qr-code">
+                    <div class="qr-code-text">DUMMY-QR-CODE</div>
                 </div>
             </div>
         </div>
