@@ -9,41 +9,8 @@
             <h5 class="navbar-brand m-0">Dashboard</h5>
         </div>
 
-        <!-- Dynamic Search Form -->
-        @php
-            $searchAction = '';
-            $searchPlaceholder = 'Search...';
-            if (request()->routeIs('admin.users.*')) {
-                $searchAction = route('admin.users.index');
-                $searchPlaceholder = 'Cari pengguna...';
-            } elseif (request()->routeIs('admin.courses.*')) {
-                $searchAction = route('admin.courses.index');
-                $searchPlaceholder = 'Cari kelas...';
-            } elseif (request()->routeIs('admin.tabungan.*')) {
-                $searchAction = route('admin.tabungan.index');
-                $searchPlaceholder = 'Cari pengguna...';
-            }
-        @endphp
-
-        @if ($searchAction)
-            <!-- Desktop Search Form -->
-            <form action="{{ $searchAction }}" method="GET" class="search-form d-none d-lg-flex ms-auto">
-                <div class="position-relative w-100">
-                    <i class="bi bi-search search-icon"></i>
-                    <input class="form-control search-input" type="search" name="search" placeholder="{{ $searchPlaceholder }}" value="{{ request('search') }}" aria-label="Search">
-                </div>
-            </form>
-        @endif
-
         <!-- Right Side Items -->
         <div class="d-flex align-items-center ms-auto">
-            <!-- Mobile Search Button -->
-            @if ($searchAction)
-            <button class="btn btn-link text-dark me-2 d-lg-none" id="mobileSearchBtn">
-                <i class="bi bi-search"></i>
-            </button>
-            @endif
-
             <!-- Notifications -->
             <div class="dropdown me-2 position-relative">
                 <button class="btn btn-link text-dark p-0" type="button" data-bs-toggle="dropdown">
@@ -68,9 +35,7 @@
             <div class="dropdown">
                 <button class="btn btn-link text-dark p-0" type="button" data-bs-toggle="dropdown">
                     <div class="nav-user-info d-flex align-items-center">
-                        @if (Auth::check())
-                            <span class="user-name me-2 d-none d-sm-inline">{{ Auth::user()->name }}</span>
-                        @endif
+                        <span class="user-name me-2 d-none d-sm-inline">Dummy User</span>
                         <i class="bi bi-person-circle"></i>
                     </div>
                 </button>
@@ -82,8 +47,7 @@
                         <hr class="dropdown-divider">
                     </li>
                     <li>
-                        <form action="{{ route('logout') }}" method="POST" class="d-inline w-100">
-                            @csrf
+                        <form action="#" method="POST" class="d-inline w-100">
                             <button type="submit" class="dropdown-item text-danger">
                                 <i class="bi bi-box-arrow-right me-2"></i>Logout
                             </button>
@@ -95,21 +59,6 @@
     </div>
 </nav>
 
-<!-- Mobile Search Form -->
-@if ($searchAction)
-<div class="container-fluid mobile-search-form" id="mobileSearchForm">
-    <form action="{{ $searchAction }}" method="GET" class="d-flex w-100">
-        <div class="position-relative w-100">
-            <i class="bi bi-search search-icon"></i>
-            <input class="form-control search-input" type="search" name="search" placeholder="{{ $searchPlaceholder }}" value="{{ request('search') }}" aria-label="Search">
-            <button type="button" class="btn btn-link" id="closeSearchBtn">
-                <i class="bi bi-x"></i>
-            </button>
-        </div>
-    </form>
-</div>
-@endif
-
 <style>
     /* Navbar Layout */
     .admin-navbar .container-fluid {
@@ -117,23 +66,6 @@
         justify-content: space-between;
         align-items: center;
         padding: 0.5rem 1rem;
-    }
-
-    .admin-navbar .search-form {
-        width: 250px;
-    }
-
-    .admin-navbar .search-icon {
-        position: absolute;
-        left: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #6c757d;
-    }
-
-    .admin-navbar .search-input {
-        padding-left: 35px;
-        border-radius: 2rem;
     }
 
     .admin-navbar .nav-user-info .user-name {
@@ -148,54 +80,8 @@
         padding: 0.2em 0.4em;
     }
 
-    /* Mobile Search Form */
-    .mobile-search-form {
-        display: none;
-        backdrop-filter: blur(6px);
-        background-color: rgba(255, 255, 255, 0.7);
-        border-radius: 1rem;
-        padding: 0.75rem 1rem;
-        margin-top: 0.25rem;
-        animation: slideDown 0.3s ease;
-    }
-
-    .mobile-search-form.show {
-        display: block;
-    }
-
-    .mobile-search-form .search-input {
-        border: 1px solid #ccc;
-        border-radius: 2rem;
-        padding-left: 2.5rem;
-        padding-right: 2.5rem;
-        font-size: 0.95rem;
-        background: #fff;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .mobile-search-form .search-icon {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #6c757d;
-    }
-
-    #closeSearchBtn {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #6c757d;
-        font-size: 1.2rem;
-    }
-
     /* Responsive Tweaks */
     @media (max-width: 992px) {
-        .admin-navbar .search-form {
-            display: none;
-        }
-
         .admin-navbar .d-lg-none {
             display: block !important;
         }
@@ -214,36 +100,4 @@
             font-size: 1rem;
         }
     }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10%);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0%);
-        }
-    }
 </style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const mobileSearchBtn = document.getElementById('mobileSearchBtn');
-        const mobileSearchForm = document.getElementById('mobileSearchForm');
-        const closeSearchBtn = document.getElementById('closeSearchBtn');
-
-        if (mobileSearchBtn) {
-            mobileSearchBtn.addEventListener('click', function() {
-                mobileSearchForm.classList.add('show');
-            });
-        }
-
-        if (closeSearchBtn) {
-            closeSearchBtn.addEventListener('click', function() {
-                mobileSearchForm.classList.remove('show');
-            });
-        }
-    });
-</script>

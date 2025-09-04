@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Absensi QR Code</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="DUMMY_CSRF_TOKEN">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -39,6 +38,13 @@
             width: 100%;
             border-radius: 15px;
             margin-bottom: 2rem;
+            background-color: #f0f0f0;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #6c757d;
         }
         
         .result-section {
@@ -102,8 +108,10 @@
             </div>
             
             <div class="scanner-body">
-                <video id="preview"></video>
+                <div id="preview">Kamera tidak aktif (dummy)</div>
                 
+                <button class="btn btn-primary w-100" onclick="simulateScan()">Simulasikan Scan</button>
+
                 <!-- Loading Section -->
                 <div class="loading" id="loading">
                     <div class="spinner-border text-primary" role="status">
@@ -125,25 +133,25 @@
                     <div class="row" id="statsContent">
                         <div class="col-md-3">
                             <div class="stat-card">
-                                <div class="stat-number" id="totalToday">0</div>
+                                <div class="stat-number" id="totalToday">10</div>
                                 <div class="stat-label">Total Absen</div>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="stat-card">
-                                <div class="stat-number" id="checkedIn">0</div>
+                                <div class="stat-number" id="checkedIn">5</div>
                                 <div class="stat-label">Check In</div>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="stat-card">
-                                <div class="stat-number" id="checkedOut">0</div>
+                                <div class="stat-number" id="checkedOut">3</div>
                                 <div class="stat-label">Check Out</div>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="stat-card">
-                                <div class="stat-number" id="present">0</div>
+                                <div class="stat-number" id="present">2</div>
                                 <div class="stat-label">Hadir</div>
                             </div>
                         </div>
@@ -155,26 +163,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-        scanner.addListener('scan', function (content) {
-            processAttendance(content);
-        });
-        Instascan.Camera.getCameras().then(function (cameras) {
-            if (cameras.length > 0) {
-                scanner.start(cameras[0]);
-            } else {
-                console.error('No cameras found.');
-                alert('No cameras found.');
-            }
-        }).catch(function (e) {
-            console.error(e);
-            alert(e);
-        });
-
-        // Load statistics on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadStats();
-        });
+        function simulateScan() {
+            processAttendance('DUMMY-QR-CODE');
+        }
 
         // Process attendance
         function processAttendance(qrCode) {
@@ -182,32 +173,18 @@
             document.getElementById('loading').style.display = 'block';
             document.getElementById('resultSection').style.display = 'none';
             
-            // Make AJAX request
-            fetch('{{ route("admin.scanner.scan") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    qr_code: qrCode
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
+            // Simulate API call
+            setTimeout(() => {
                 document.getElementById('loading').style.display = 'none';
-                
-                if (data.success) {
-                    showResult('success', data.message, data.data);
-                    loadStats(); // Refresh statistics
-                } else {
-                    showResult('error', data.message);
-                }
-            })
-            .catch(error => {
-                document.getElementById('loading').style.display = 'none';
-                showResult('error', 'Terjadi kesalahan: ' + error.message);
-            });
+                const dummyData = {
+                    user_name: 'Dummy User',
+                    date: '01 Jan 2025',
+                    scanned_by: 'Admin',
+                    check_in_time: '08:00',
+                    check_out_time: null
+                };
+                showResult('success', 'Absensi berhasil', dummyData);
+            }, 1000);
         }
 
         // Show result
@@ -250,26 +227,6 @@
                 resultSection.style.display = 'none';
             }, 5000);
         }
-
-        // Load statistics
-        function loadStats() {
-            fetch('{{ route("admin.scanner.stats") }}')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('totalToday').textContent = data.data.total_today;
-                    document.getElementById('checkedIn').textContent = data.data.checked_in;
-                    document.getElementById('checkedOut').textContent = data.data.checked_out;
-                    document.getElementById('present').textContent = data.data.present;
-                }
-            })
-            .catch(error => {
-                console.error('Error loading stats:', error);
-            });
-        }
-
-        // Auto refresh stats every 30 seconds
-        setInterval(loadStats, 30000);
     </script>
 </body>
 </html>

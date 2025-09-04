@@ -34,7 +34,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="mb-1">Total Users</h6>
-                            <h3 class="mb-0">{{ $totalUsers }}</h3>
+                            <h3 class="mb-0">100</h3>
                         </div>
                         <i class="bi bi-people text-primary"></i>
                     </div>
@@ -45,7 +45,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="mb-1">Total Murid</h6>
-                            <h3 class="mb-0">{{ $totalStudents }}</h3>
+                            <h3 class="mb-0">80</h3>
                         </div>
                         <i class="bi bi-person-fill text-success"></i>
                     </div>
@@ -56,7 +56,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="mb-1">Total Guru</h6>
-                            <h3 class="mb-0">{{ $totalTeachers }}</h3>
+                            <h3 class="mb-0">20</h3>
                         </div>
                         <i class="bi bi-person-video3 text-warning"></i>
                     </div>
@@ -67,7 +67,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="mb-1">Total Kelas</h6>
-                            <h3 class="mb-0">{{ $totalClasses }}</h3>
+                            <h3 class="mb-0">10</h3>
                         </div>
                         <i class="bi bi-door-open text-danger"></i>
                     </div>
@@ -77,7 +77,7 @@
 
         <div class="row mt-4">
             <div class="col-12">
-                <a href="{{ route('admin.scanner.index') }}" class="btn btn-primary w-100">
+                <a href="#" class="btn btn-primary w-100">
                     <i class="bi bi-qr-code-scan me-2"></i> Buka Halaman Scanner
                 </a>
             </div>
@@ -96,24 +96,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($recentUsers as $user)
                         <tr>
-                            <td>{{ $user->name }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>{{ ucfirst(str_replace('_', ' ', $user->role->name)) }}</td>
-                            <td>
-                                @if($user->created_at)
-                                {{ $user->created_at->format('d M Y') }}
-                                @else
-                                <span class="text-muted">N/A</span>
-                                @endif
-                            </td>
+                            <td>Dummy User 1</td>
+                            <td>dummy1@example.com</td>
+                            <td>Murid</td>
+                            <td>01 Jan 2025</td>
                         </tr>
-                        @empty
                         <tr>
-                            <td colspan="4" class="text-center">Tidak ada user terbaru.</td>
+                            <td>Dummy User 2</td>
+                            <td>dummy2@example.com</td>
+                            <td>Guru</td>
+                            <td>02 Jan 2025</td>
                         </tr>
-                        @endforelse
                     </tbody>
                 </table>
             </div>
